@@ -51,16 +51,17 @@ const ViewAdApplicationDialog = ({ open, onOpenChange, data }) => {
     const mutation = useMutation({
         mutationFn: updateAdApplicationStatus,
         onSuccess: (res) => {
-            if (res?.response?.success) {
+            if (res?.response?.success === true) {
                 toast.success("Status updated successfully");
                 queryClient.invalidateQueries(["adApplications"]);
                 onOpenChange(false);
             } else {
-                toast.error(res?.response?.message || "Failed to update status");
+                toast.error(res?.response?.data?.message || res?.response?.message || res?.message || "Failed to update status");
             }
         },
-        onError: () => {
-            toast.error("An error occurred");
+        onError: (error) => {
+            console.error(error);
+            toast.error(error?.response?.data?.message || error?.message || "Failed to update status");
         }
     });
 

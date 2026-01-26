@@ -84,10 +84,14 @@ const AddTopUpRequestDialog = ({ open, setOpen, editId = null }) => {
 
     const { mutate: createMutation, isPending: isCreating } = useMutation({
         mutationFn: createWallet,
-        onSuccess: () => {
-            toast.success("Top-up request created successfully");
-            queryClient.invalidateQueries(["wallets"]);
-            setOpen(false);
+        onSuccess: (data) => {
+            if (data?.response?.success === true) {
+                toast.success("Top-up request created successfully");
+                queryClient.invalidateQueries(["wallets"]);
+                setOpen(false);
+            } else {
+                toast.error(data?.response?.data?.message || data?.response?.message || data?.message || "Failed to create top-up request");
+            }
         },
         onError: (error) => {
             console.error(error);
@@ -97,10 +101,14 @@ const AddTopUpRequestDialog = ({ open, setOpen, editId = null }) => {
 
     const { mutate: updateMutation, isPending: isUpdating } = useMutation({
         mutationFn: updateWallet,
-        onSuccess: () => {
-            toast.success("Top-up request updated successfully");
-            queryClient.invalidateQueries(["wallets"]);
-            setOpen(false);
+        onSuccess: (data) => {
+            if (data?.response?.success === true) {
+                toast.success("Top-up request updated successfully");
+                queryClient.invalidateQueries(["wallets"]);
+                setOpen(false);
+            } else {
+                toast.error(data?.response?.data?.message || data?.response?.message || data?.message || "Failed to update top-up request");
+            }
         },
         onError: (error) => {
             console.error(error);

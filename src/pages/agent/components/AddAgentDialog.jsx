@@ -59,12 +59,12 @@ const AddAgentDialog = ({ open, onClose }) => {
                 queryClient.invalidateQueries(["agents"]);
                 handleClose();
             } else {
-                toast.error(response?.response?.message || "Failed to add agent.");
+                toast.error(response?.response?.data?.message || response?.response?.message || response?.message || "Failed to add agent.");
             }
         },
         onError: (error) => {
             console.error(error);
-            toast.error("Failed to add agent.");
+            toast.error(error?.response?.data?.message || error?.message || "Failed to add agent.");
         },
     });
 

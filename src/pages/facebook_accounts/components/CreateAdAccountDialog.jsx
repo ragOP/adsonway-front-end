@@ -67,11 +67,12 @@ const CreateAdAccountDialog = ({ open, onOpenChange, onSuccess }) => {
                 if (onSuccess) onSuccess();
                 queryClient.invalidateQueries(["allFacebookAccounts"]);
             } else {
-                toast.error(data?.response?.message || "Failed to create ad account");
+                toast.error(data?.response?.data?.message || data?.response?.message || data?.message || "Failed to create ad account");
             }
         },
-        onError: () => {
-            toast.error("An error occurred");
+        onError: (error) => {
+            console.error(error);
+            toast.error(error?.response?.data?.message || error?.message || "Failed to create ad account");
         }
     });
 

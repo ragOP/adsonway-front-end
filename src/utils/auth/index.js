@@ -1,7 +1,5 @@
-// utils/auth.js
-
 import { jwtDecode } from "jwt-decode";
-import { getItem, removeItem,setItem } from "../local_storage";
+import { getItem, removeItem, setItem } from "../local_storage";
 
 const TOKEN_KEY = "token";
 

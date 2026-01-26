@@ -69,12 +69,12 @@ const AddUserDialog = ({ open, onClose }) => {
                 queryClient.invalidateQueries(["users"]);
                 handleClose();
             } else {
-                toast.error(response?.response?.message || "Failed to add user.");
+                toast.error(response?.response?.data?.message || response?.response?.message || response?.message || "Failed to add user.");
             }
         },
         onError: (error) => {
             console.error(error);
-            toast.error("Failed to add user.");
+            toast.error(error?.response?.data?.message || error?.message || "Failed to add user.");
         },
     });
 

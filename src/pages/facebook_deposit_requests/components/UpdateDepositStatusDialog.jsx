@@ -31,16 +31,17 @@ const UpdateDepositStatusDialog = ({ open, onOpenChange, data }) => {
     const mutation = useMutation({
         mutationFn: (payload) => updateFacebookDepositRequest({ id: data._id, data: payload }),
         onSuccess: (res) => {
-            if (res?.response?.success) {
+            if (res?.response?.success === true) {
                 toast.success("Deposit status updated successfully!");
                 onOpenChange(false);
                 queryClient.invalidateQueries(["allFacebookDepositRequests"]);
             } else {
-                toast.error(res?.response?.message || "Failed to update status");
+                toast.error(res?.response?.data?.message || res?.response?.message || res?.message || "Failed to update status");
             }
         },
-        onError: () => {
-            toast.error("An error occurred");
+        onError: (error) => {
+            console.error(error);
+            toast.error(error?.response?.data?.message || error?.message || "Failed to update status");
         }
     });
 

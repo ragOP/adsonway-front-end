@@ -59,12 +59,12 @@ const AddAdminDialog = ({ open, onClose }) => {
                 queryClient.invalidateQueries(["admins"]);
                 handleClose();
             } else {
-                toast.error(response?.response?.message || "Failed to add admin.");
+                toast.error(response?.response?.data?.message || response?.response?.message || response?.message || "Failed to add admin.");
             }
         },
         onError: (error) => {
             console.error(error);
-            toast.error("Failed to add admin.");
+            toast.error(error?.response?.data?.message || error?.message || "Failed to add admin.");
         },
     });
 
