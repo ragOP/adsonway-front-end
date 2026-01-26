@@ -31,6 +31,8 @@ import GoogleDeposits from "@/pages/google_deposits";
 
 import FacebookDepositRequests from "@/pages/facebook_deposit_requests";
 
+import GoogleDepositRequests from "@/pages/google_deposit_requests";
+
 const Router = () => {
   return (
     <Routes>
@@ -58,6 +60,7 @@ const Router = () => {
           <Route path="/dashboard/my-facebook-accounts" element={<MyFacebookAccounts />} />
           <Route path="/dashboard/facebook-deposits" element={<FacebookDeposits />} />
           <Route path="/dashboard/google-deposits" element={<GoogleDeposits />} />
+          <Route path="/dashboard/google-deposit-requests" element={<GoogleDepositRequests />} />
           {/* Blogs */}
           <Route path="/dashboard/blogs" element={<Blogs />} />
           <Route path="/dashboard/blogs/add" element={<BlogEditor />} />

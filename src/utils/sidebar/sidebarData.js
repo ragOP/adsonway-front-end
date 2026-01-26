@@ -145,6 +145,12 @@ export const data = {
           roles: ["admin"],
         },
         {
+          title: "Deposit Requests",
+          url: "/dashboard/google-deposit-requests",
+          icon: FileText,
+          roles: ["admin"],
+        },
+        {
           title: "Ad Application",
           url: "/dashboard/google-ad-application",
           icon: FileText,

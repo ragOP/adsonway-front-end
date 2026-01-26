@@ -68,4 +68,7 @@ export const endpoints = {
   addMoneyToFacebookAccount: "api/user/add-money-to-facebook-account",
   addMoneyToGoogleAccount: "api/user/add-money-to-google-account",
   allFacebookDepositRequests: "api/admin/get-all-facebook-id-topup-requests",
+  allGoogleDepositRequests: "api/admin/get-all-google-id-topup-requests",
+  updateFacebookDepositRequest: "api/admin/update-facebook-ad-account-deposit",
+  updateGoogleDepositRequest: "api/admin/update-google-ad-account-deposit",
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import CustomTable from "@/components/custom_table";
 import Typography from "@/components/typography";
-import { fetchAllFacebookDepositRequests } from "../helpers/fetchAllFacebookDepositRequests";
+import { fetchAllGoogleDepositRequests } from "../helpers/fetchAllGoogleDepositRequests";
 import { format } from "date-fns";
 import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,8 @@ const DepositRequestsTable = ({ setTotalRecords, params, onPageChange }) => {
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["allFacebookDepositRequests", params],
-        queryFn: () => fetchAllFacebookDepositRequests({ params }),
+        queryKey: ["allGoogleDepositRequests", params],
+        queryFn: () => fetchAllGoogleDepositRequests({ params }),
     });
 
     const records = dataRes?.requests || [];
