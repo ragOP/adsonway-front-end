@@ -1,11 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import CustomTable from "@/components/custom_table";
 import Typography from "@/components/typography";
 import { format } from "date-fns";
 import { fetchTransactions } from "../helpers/fetchTransactions";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import TransactionDetailsDialog from "./TransactionDetailsDialog";
 
 const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+
     const {
         data: transactionsRes,
         isLoading,
@@ -25,6 +31,10 @@ const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
         }
     }, [transactions.length, setTransactionsLength]);
 
+    const handleView = (transaction) => {
+        setSelectedTransaction(transaction);
+        setIsViewDialogOpen(true);
+    };
 
     const columns = [
         {
@@ -64,6 +74,15 @@ const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
             ),
         },
         {
+            key: "balanceBefore",
+            label: "Old Balance",
+            render: (value) => (
+                <Typography variant="p" className="text-gray-400 text-sm">
+                    $ {value?.toLocaleString() || "0"}
+                </Typography>
+            ),
+        },
+        {
             key: "balanceAfter",
             label: "New Balance",
             render: (value) => (
@@ -85,15 +104,6 @@ const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
             ),
         },
         {
-            key: "description",
-            label: "Description",
-            render: (value) => (
-                <Typography className="text-gray-400 text-sm max-w-[200px] truncate" title={value}>
-                    {value || "---"}
-                </Typography>
-            ),
-        },
-        {
             key: "createdAt",
             label: "Date",
             render: (value) => (
@@ -107,20 +117,42 @@ const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
                 </div>
             ),
         },
+        {
+            key: "actions",
+            label: "Actions",
+            render: (_, row) => (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleView(row)}
+                    className="h-8 w-8 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-900/20"
+                >
+                    <Eye className="h-4 w-4" />
+                </Button>
+            ),
+        },
     ];
 
     return (
-        <CustomTable
-            columns={columns}
-            data={transactions}
-            isLoading={isLoading}
-            error={error}
-            emptyStateMessage="No transactions found"
-            perPage={params.per_page}
-            currentPage={params.page}
-            totalPages={apiTotalPages}
-            onPageChange={onPageChange}
-        />
+        <>
+            <CustomTable
+                columns={columns}
+                data={transactions}
+                isLoading={isLoading}
+                error={error}
+                emptyStateMessage="No transactions found"
+                perPage={params.per_page}
+                currentPage={params.page}
+                totalPages={apiTotalPages}
+                onPageChange={onPageChange}
+            />
+
+            <TransactionDetailsDialog
+                open={isViewDialogOpen}
+                onOpenChange={setIsViewDialogOpen}
+                data={selectedTransaction}
+            />
+        </>
     );
 };
 

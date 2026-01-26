@@ -71,4 +71,5 @@ export const endpoints = {
   allGoogleDepositRequests: "api/admin/get-all-google-id-topup-requests",
   updateFacebookDepositRequest: "api/admin/update-facebook-ad-account-deposit",
   updateGoogleDepositRequest: "api/admin/update-google-ad-account-deposit",
+  modifyUserWallet: "api/admin/modify-user-wallet",
 }

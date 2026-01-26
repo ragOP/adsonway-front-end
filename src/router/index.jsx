@@ -33,6 +33,8 @@ import FacebookDepositRequests from "@/pages/facebook_deposit_requests";
 
 import GoogleDepositRequests from "@/pages/google_deposit_requests";
 
+import UserWalletManagement from "@/pages/user_wallet_management";
+
 const Router = () => {
   return (
     <Routes>
@@ -47,6 +49,7 @@ const Router = () => {
           <Route path="/dashboard/admins" element={<Admin />} />
           <Route path="/dashboard/agents" element={<Agent />} />
           <Route path="/dashboard/users" element={<Users />} />
+          <Route path="/dashboard/user-wallet-management" element={<UserWalletManagement />} />
           <Route path="/dashboard/agent-users" element={<AgentUsers />} />
           <Route path="/dashboard/payment" element={<Payment />} />
           <Route path="/dashboard/wallet" element={<Wallet />} />

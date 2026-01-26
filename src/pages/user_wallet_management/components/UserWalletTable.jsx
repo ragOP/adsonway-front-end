@@ -1,17 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, formatDistanceToNow } from "date-fns";
 import ActionMenu from "@/components/action_menu";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, TrendingUp, TrendingDown } from "lucide-react";
 import CustomTable from "@/components/custom_table";
 import Typography from "@/components/typography";
 import { useEffect, useState } from "react";
 import { CustomDialog } from "@/components/custom_dialog";
-import { toast } from "sonner";
-
 import { useNavigate } from "react-router";
-import { fetchUsers } from "../helpers/fetchUsers";
+import { fetchAdminUsers } from "../helpers/fetchAdminUsers";
+import WalletTransactionDialog from "./WalletTransactionDialog";
 
-const UsersTable = ({ setUsersLength, params }) => {
+const UserWalletTable = ({ setUsersLength, params }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
@@ -20,8 +19,8 @@ const UsersTable = ({ setUsersLength, params }) => {
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["users", params],
-        queryFn: () => fetchUsers({ params }),
+        queryKey: ["adminUsers", params],
+        queryFn: () => fetchAdminUsers({ params }),
     });
 
     const users = usersRes || [];
@@ -29,6 +28,7 @@ const UsersTable = ({ setUsersLength, params }) => {
 
     const [openDelete, setOpenDelete] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [walletDialog, setWalletDialog] = useState({ open: false, user: null, type: null });
 
 
     const handleOpenDialog = (user) => {
@@ -41,21 +41,11 @@ const UsersTable = ({ setUsersLength, params }) => {
         setSelectedUser(null);
     };
 
-    // const { mutate: deleteUserMutation, isLoading: isDeleting } = useMutation({
-    //   mutationFn: deleteUser,
-    //   onSuccess: () => {
-    //     toast.success("User deleted successfully.");
-    //     queryClient.invalidateQueries(["users"]);
-    //     handleCloseDialog();
-    //   },
-    //   onError: (error) => {
-    //     console.error(error);
-    //     toast.error("Failed to delete user.");
-    //   },
-    // });
+    const handleWalletAction = (user, type) => {
+        setWalletDialog({ open: true, user, type });
+    };
 
     const handleDeleteUser = (id) => {
-        // deleteUserMutation(id);
         console.log("Delete user", id);
     };
 
@@ -101,6 +91,7 @@ const UsersTable = ({ setUsersLength, params }) => {
                 </span>
             ),
         },
+
         {
             key: "createdAt",
             label: "Created at",
@@ -126,16 +117,18 @@ const UsersTable = ({ setUsersLength, params }) => {
             render: (value, row) => {
                 const options = [
                     {
-                        label: "Edit User",
-                        icon: Pencil,
-                        action: () => onNavigateToEdit(row._id),
+                        label: "Credit Amount",
+                        icon: TrendingUp,
+                        action: () => handleWalletAction(row, "credit"),
+                        className: "text-green-500",
                     },
                     {
-                        label: "Delete User",
-                        icon: Trash2,
-                        action: () => handleOpenDialog(row),
+                        label: "Debit Amount",
+                        icon: TrendingDown,
+                        action: () => handleWalletAction(row, "debit"),
                         className: "text-red-500",
                     },
+
                 ];
 
                 return <ActionMenu options={options} />;
@@ -144,7 +137,6 @@ const UsersTable = ({ setUsersLength, params }) => {
     ];
 
     const onPageChange = (page) => {
-        // Implement pagination if supported by API and params
     };
 
     const perPage = params.per_page;
@@ -172,10 +164,16 @@ const UsersTable = ({ setUsersLength, params }) => {
                 description="This action will permanently remove the user account."
                 modalType="Delete"
                 onConfirm={() => handleDeleteUser(selectedUser?._id)}
-            // isLoading={isDeleting}
+            />
+
+            <WalletTransactionDialog
+                open={walletDialog.open}
+                onOpenChange={(isOpen) => setWalletDialog(prev => ({ ...prev, open: isOpen }))}
+                user={walletDialog.user}
+                type={walletDialog.type}
             />
         </>
     );
 };
 
-export default UsersTable;
+export default UserWalletTable;

@@ -49,6 +49,7 @@ export const data = {
       items: [],
       roles: ["agent"],
     },
+
     {
       title: "Agent User",
       url: "/dashboard/agent-users",
@@ -69,6 +70,14 @@ export const data = {
       title: "User Topup Request",
       url: "/dashboard/wallet",
       icon: Wallet,
+      isActive: true,
+      items: [],
+      roles: ["admin"],
+    },
+    {
+      title: "User Wallet Management",
+      url: "/dashboard/user-wallet-management",
+      icon: Users2,
       isActive: true,
       items: [],
       roles: ["admin"],
