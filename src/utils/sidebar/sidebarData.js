@@ -91,6 +91,22 @@ export const data = {
       roles: ["admin", "user", "agent"],
     },
     {
+      title: "Account Clearing",
+      url: "/dashboard/account-clearing",
+      icon: CreditCard,
+      isActive: true,
+      items: [],
+      roles: ["user"],
+    },
+    {
+      title: "Account Clearing Requests",
+      url: "/dashboard/account-clearing-requests",
+      icon: CreditCard,
+      isActive: true,
+      items: [],
+      roles: ["admin"],
+    },
+    {
       title: "Facebook",
       url: "#",
       icon: Facebook,

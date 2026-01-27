@@ -3,14 +3,16 @@ import { format } from "date-fns";
 import { useDebounce } from "@uidotdev/usehooks";
 import CustomActionMenu from "@/components/custom_action";
 import NavbarItem from "@/components/navbar/navbar_item";
-import TransactionsTable from "./components/TransactionsTable";
+import RefundsTable from "./components/RefundsTable";
+import AddRefundRequestDialog from "./components/AddRefundRequestDialog";
 
-const TransactionLog = () => {
-    const [totalTransactions, setTotalTransactions] = useState(0);
+const AccountClearing = () => {
+    const [totalRefunds, setTotalRefunds] = useState(0);
     const [searchText, setSearchText] = useState("");
+    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [params, setParams] = useState({
         page: 1,
-        limit: 25,
+        per_page: 25,
         search: "",
         start_date: undefined,
         end_date: undefined,
@@ -25,15 +27,15 @@ const TransactionLog = () => {
     const onRowsPerPageChange = (newRowsPerPage) => {
         setParams((prev) => ({
             ...prev,
-            page: 1, // Reset to first page on size change
-            limit: newRowsPerPage,
+            page: 1,
+            per_page: newRowsPerPage,
         }));
     };
 
     const onPageChange = (page) => {
         setParams((prev) => ({
             ...prev,
-            page: page + 1, // CustomTable typically returns 0-based index
+            page: page + 1,
         }));
     };
 
@@ -55,50 +57,52 @@ const TransactionLog = () => {
         }
     }, []);
 
-    const breadcrumbs = [{ title: "Transaction Log", isNavigation: true }];
+    const breadcrumbs = [{ title: "Account Clearing", isNavigation: true }];
 
     useEffect(() => {
         setParams((prev) => ({
             ...prev,
             search: debouncedSearch,
-            page: 1, // Reset to first page on search
+            page: 1,
         }));
     }, [debouncedSearch]);
 
     return (
         <div className="flex flex-col">
             <NavbarItem
-                title="Transaction Log"
+                title="Account Clearing"
                 breadcrumbs={breadcrumbs}
             />
 
             <div className="px-4">
                 <CustomActionMenu
-                    title="Transactions"
-                    total={totalTransactions}
+                    title="Refund Applications"
+                    total={totalRefunds}
                     searchText={searchText}
                     handleSearch={handleSearch}
                     onRowsPerPageChange={onRowsPerPageChange}
                     showRowSelection={true}
-                    rowsPerPage={params.limit}
+                    rowsPerPage={params.per_page}
                     disableBulkExport={true}
-                    // explicit disableAdd since this is a log
-                    disableAdd={true}
+                    disableAdd={false}
+                    onAdd={() => setIsAddDialogOpen(true)}
                     showDateRangePicker={true}
                     handleDateRangeChange={handleDateRangeChange}
                 />
 
-
-
-                <TransactionsTable
-                    setTransactionsLength={setTotalTransactions}
+                <RefundsTable
+                    setTotalRefunds={setTotalRefunds}
                     params={params}
-                    // We need to pass a way to update page if the table uses CustomTable's pagination
                     onPageChange={onPageChange}
+                />
+
+                <AddRefundRequestDialog
+                    open={isAddDialogOpen}
+                    onOpenChange={setIsAddDialogOpen}
                 />
             </div>
         </div>
     );
 };
 
-export default TransactionLog;
+export default AccountClearing;

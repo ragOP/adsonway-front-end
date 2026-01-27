@@ -141,7 +141,7 @@ const TransactionsTable = ({ setTransactionsLength, params, onPageChange }) => {
                 isLoading={isLoading}
                 error={error}
                 emptyStateMessage="No transactions found"
-                perPage={params.per_page}
+                perPage={params.limit}
                 currentPage={params.page}
                 totalPages={apiTotalPages}
                 onPageChange={onPageChange}

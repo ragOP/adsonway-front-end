@@ -34,6 +34,8 @@ import FacebookDepositRequests from "@/pages/facebook_deposit_requests";
 import GoogleDepositRequests from "@/pages/google_deposit_requests";
 
 import UserWalletManagement from "@/pages/user_wallet_management";
+import AccountClearing from "@/pages/account_clearing";
+import AdminAccountClearingRequests from "@/pages/admin_account_clearing_requests";
 
 const Router = () => {
   return (
@@ -64,6 +66,8 @@ const Router = () => {
           <Route path="/dashboard/facebook-deposits" element={<FacebookDeposits />} />
           <Route path="/dashboard/google-deposits" element={<GoogleDeposits />} />
           <Route path="/dashboard/google-deposit-requests" element={<GoogleDepositRequests />} />
+          <Route path="/dashboard/account-clearing" element={<AccountClearing />} />
+          <Route path="/dashboard/account-clearing-requests" element={<AdminAccountClearingRequests />} />
           {/* Blogs */}
           <Route path="/dashboard/blogs" element={<Blogs />} />
           <Route path="/dashboard/blogs/add" element={<BlogEditor />} />

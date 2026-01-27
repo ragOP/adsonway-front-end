@@ -72,4 +72,8 @@ export const endpoints = {
   updateFacebookDepositRequest: "api/admin/update-facebook-ad-account-deposit",
   updateGoogleDepositRequest: "api/admin/update-google-ad-account-deposit",
   modifyUserWallet: "api/admin/modify-user-wallet",
+  myRefundApplications: "api/refund-application/get-my-refund-applications",
+  createRefundApplication: "api/refund-application/create-refund-application",
+  getAllRefundApplications: "api/refund-application/get-all-refund-applications",
+  updateRefundApplicationStatus: "api/refund-application/update-refund-application",
 }
