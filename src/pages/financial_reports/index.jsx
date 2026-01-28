@@ -3,6 +3,7 @@ import { format, startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import NavbarItem from "@/components/navbar/navbar_item";
 import { fetchFinancialReports } from "./helpers/fetchFinancialReports";
+import { exportFinancialReports } from "./helpers/exportFinancialReports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Select,
@@ -14,7 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Loader2, DollarSign, FileText, RefreshCw, CreditCard, CheckCircle2, Calendar as CalendarIcon, Filter, ArrowUpRight, TrendingUp, Layers, Activity } from "lucide-react";
+import { Loader2, DollarSign, FileText, RefreshCw, CreditCard, CheckCircle2, Calendar as CalendarIcon, Filter, ArrowUpRight, TrendingUp, Layers, Activity, Download } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -26,6 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // Helper to format currency
 const formatCurrency = (amount) => {
@@ -70,6 +72,34 @@ const FinancialReports = () => {
     const applicationsReport = reportsData?.applicationsReport || [];
     const refundsReport = reportsData?.refundsReport?.refunds || [];
 
+    const handleExport = async () => {
+        try {
+            const toastId = toast.loading("Preparing download...");
+            const response = await exportFinancialReports({
+                platform: filters.platform,
+                status: filters.status,
+                fromDate: fromDateStr,
+                toDate: toDateStr,
+            });
+
+            // Create blob link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `financial_report_${fromDateStr}_${toDateStr}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            toast.dismiss(toastId);
+            toast.success("Report downloaded successfully");
+        } catch (error) {
+            console.error(error);
+            toast.dismiss();
+            toast.error("Failed to export report");
+        }
+    };
+
     const breadcrumbs = [{ title: "Financial Reports", isNavigation: true }];
 
     const renderStatusBadge = (status) => {
@@ -85,6 +115,21 @@ const FinancialReports = () => {
             <NavbarItem title="Financial Reports" breadcrumbs={breadcrumbs} />
 
             <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-lg font-semibold text-white">Overview</h2>
+                        <p className="text-sm text-zinc-400">Manage and view your financial reports.</p>
+                    </div>
+                    <Button
+                        onClick={handleExport}
+                        variant="outline"
+                        className="bg-zinc-900 border-zinc-700 text-zinc-100 hover:bg-zinc-800 hover:text-white"
+                    >
+                        <Download className="mr-2 h-4 w-4" />
+                        Export CSV
+                    </Button>
+                </div>
 
                 {/* Filters Bar: 4 Equal Columns */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-zinc-900/40 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl shadow-black/40">
