@@ -76,4 +76,6 @@ export const endpoints = {
   createRefundApplication: "api/refund-application/create-refund-application",
   getAllRefundApplications: "api/refund-application/get-all-refund-applications",
   updateRefundApplicationStatus: "api/refund-application/update-refund-application",
+  financialReports: "api/user/financial-reports",
+  exportFinancialReports: "api/user/financial-reports/export",
 }

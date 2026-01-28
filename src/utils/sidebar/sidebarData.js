@@ -1,4 +1,4 @@
-import { Chrome, ContactIcon, CreditCard, Facebook, FileText, LayoutDashboard, ShoppingCart, Users2, Wallet } from "lucide-react";
+import { Chrome, ContactIcon, CreditCard, Facebook, FileText, LayoutDashboard, ShoppingCart, Users2, Wallet, BarChart } from "lucide-react";
 import { getItem } from "../local_storage";
 const userName = getItem("userName") || "Admin";
 const userEmail = getItem("userEmail") || "admin@admin.com";
@@ -105,6 +105,14 @@ export const data = {
       isActive: true,
       items: [],
       roles: ["admin"],
+    },
+    {
+      title: "Reports",
+      url: "/dashboard/financial-reports",
+      icon: BarChart,
+      isActive: true,
+      items: [],
+      roles: ["user"],
     },
     {
       title: "Facebook",
