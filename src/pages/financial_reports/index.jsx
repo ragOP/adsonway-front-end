@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import NavbarItem from "@/components/navbar/navbar_item";
+import { getItem } from "@/utils/local_storage";
 import { fetchFinancialReports } from "./helpers/fetchFinancialReports";
 import { exportFinancialReports } from "./helpers/exportFinancialReports";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +49,9 @@ const FinancialReports = () => {
         platform: "all",
         status: "all",
     });
+
+    const userRole = getItem("userRole");
+    const isUserColumnVisible = userRole === "admin" || userRole === "agent";
 
     const [activeTab, setActiveTab] = useState("deposits");
 
@@ -308,6 +312,7 @@ const FinancialReports = () => {
                                             {activeTab === 'deposits' && (
                                                 <>
                                                     <HeadCell>Date & Time</HeadCell>
+                                                    {isUserColumnVisible && <HeadCell>User</HeadCell>}
                                                     <HeadCell>Account Details</HeadCell>
                                                     <HeadCell>Platform</HeadCell>
                                                     <HeadCell align="right">Amount</HeadCell>
@@ -319,6 +324,7 @@ const FinancialReports = () => {
                                             {activeTab === 'applications' && (
                                                 <>
                                                     <HeadCell>Date & Time</HeadCell>
+                                                    <HeadCell>User</HeadCell>
                                                     <HeadCell>Account</HeadCell>
                                                     <HeadCell>Service</HeadCell>
                                                     <HeadCell align="right">App Fee</HeadCell>
@@ -330,6 +336,7 @@ const FinancialReports = () => {
                                             {activeTab === 'refunds' && (
                                                 <>
                                                     <HeadCell>Date & Time</HeadCell>
+                                                    <HeadCell>User</HeadCell>
                                                     <HeadCell>Account</HeadCell>
                                                     <HeadCell>Platform</HeadCell>
                                                     <HeadCell align="right">Requested</HeadCell>
@@ -348,6 +355,14 @@ const FinancialReports = () => {
                                                     <div>{format(new Date(item.date), "dd MMM yyyy")}</div>
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
                                                 </TableCell>
+                                                {isUserColumnVisible && (
+                                                    <TableCell>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
+                                                            <span className="text-xs text-zinc-500">{item.user?.email}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                )}
                                                 <TableCell>
                                                     <div className="font-medium text-zinc-200">{item.adAccountName}</div>
                                                 </TableCell>
@@ -370,6 +385,12 @@ const FinancialReports = () => {
                                                 <TableCell className="py-4 font-mono text-xs text-zinc-400">
                                                     <div>{format(new Date(item.date), "dd MMM yyyy")}</div>
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
+                                                        <span className="text-xs text-zinc-500">{item.user?.email}</span>
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium text-zinc-200">{item.accountName}</div>
@@ -398,6 +419,12 @@ const FinancialReports = () => {
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
                                                 </TableCell>
                                                 <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
+                                                        <span className="text-xs text-zinc-500">{item.user?.email}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
                                                     <div className="font-medium text-zinc-200">{item.accountName}</div>
                                                 </TableCell>
                                                 <TableCell>
@@ -414,9 +441,9 @@ const FinancialReports = () => {
                                         ))}
 
                                         {/* Empty States */}
-                                        {activeTab === 'deposits' && depositRecords.length === 0 && <EmptyRow colSpan={7} />}
-                                        {activeTab === 'applications' && applicationsReport.length === 0 && <EmptyRow colSpan={7} />}
-                                        {activeTab === 'refunds' && refundsReport.length === 0 && <EmptyRow colSpan={7} />}
+                                        {activeTab === 'deposits' && depositRecords.length === 0 && <EmptyRow colSpan={isUserColumnVisible ? 8 : 7} />}
+                                        {activeTab === 'applications' && applicationsReport.length === 0 && <EmptyRow colSpan={isUserColumnVisible ? 8 : 7} />}
+                                        {activeTab === 'refunds' && refundsReport.length === 0 && <EmptyRow colSpan={isUserColumnVisible ? 8 : 7} />}
 
                                     </TableBody>
                                 </Table>

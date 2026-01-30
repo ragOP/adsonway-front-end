@@ -112,7 +112,7 @@ export const data = {
       icon: BarChart,
       isActive: true,
       items: [],
-      roles: ["user"],
+      roles: ["user", "admin", "agent"],
     },
     {
       title: "Facebook",

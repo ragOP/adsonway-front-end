@@ -6,6 +6,7 @@ import { endpoints } from "@/api/endpoints";
 export const exportFinancialReports = async (params) => {
     try {
         const token = getItem("token");
+        const userRole = getItem("userRole");
         const headers = {
             "ngrok-skip-browser-warning": "true",
         };
@@ -14,8 +15,16 @@ export const exportFinancialReports = async (params) => {
             headers.Authorization = `Bearer ${token}`;
         }
 
+        let endpoint = endpoints.userExportFinancialReports;
+
+        if (userRole === "admin") {
+            endpoint = endpoints.adminExportFinancialReports;
+        } else if (userRole === "agent") {
+            endpoint = endpoints.agentExportFinancialReports;
+        }
+
         const response = await axios({
-            url: `${BACKEND_URL}/${endpoints.exportFinancialReports}`,
+            url: `${BACKEND_URL}/${endpoint}`,
             method: "GET",
             params,
             headers,
