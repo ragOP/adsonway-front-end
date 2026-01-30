@@ -12,6 +12,7 @@ const MyGoogleAccounts = () => {
         limit: 25,
         startDate: undefined,
         endDate: undefined,
+        sort: -1,
     });
 
     const handleSearch = (e) => {

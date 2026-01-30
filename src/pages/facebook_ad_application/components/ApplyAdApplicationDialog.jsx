@@ -68,7 +68,7 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
     // Fetch Active Facebook Accounts for Existing License
     const { data: activeAccounts, isLoading: isLoadingAccounts } = useQuery({
         queryKey: ["myActiveFacebookAccounts"],
-        queryFn: () => fetchMyAdAccounts({ params: { status: "active" } }),
+        queryFn: () => fetchMyAdAccounts({ params: { status: "active", sort: -1 } }),
         enabled: open && formData.licenseType === "Existing License",
     });
 
@@ -304,7 +304,7 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                                         <SelectContent>
                                             {activeAccounts?.accounts?.length > 0 ? (
                                                 activeAccounts.accounts.map((account) => (
-                                                    <SelectItem key={account._id} value={account._id}>
+                                                    <SelectItem key={account._id} value={account.license_number}>
                                                         {account.license_number}
                                                     </SelectItem>
                                                 ))
