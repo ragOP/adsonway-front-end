@@ -40,6 +40,65 @@ const formatCurrency = (amount) => {
     }).format(amount || 0);
 };
 
+// UI Components to declutter main component
+const SummaryCard = ({ title, value, icon, color, bg, isLoading }) => {
+    const Icon = icon;
+    return (
+        <Card className="group relative overflow-hidden bg-zinc-900/40 border-white/5 hover:border-white/10 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10">
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${bg} blur-2xl opacity-20 group-hover:opacity-40 transition-opacity`}></div>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 z-10 relative">
+                <CardTitle className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">{title}</CardTitle>
+                <div className={`p-2 rounded-lg ${bg} ${color}`}>
+                    {Icon && <Icon className="h-4 w-4" />}
+                </div>
+            </CardHeader>
+            <CardContent className="z-10 relative">
+                <div className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
+                    {isLoading ? <div className="h-8 w-24 bg-zinc-800 animate-pulse rounded"></div> : value}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
+const TabButton = ({ active, onClick, label }) => (
+    <button
+        onClick={onClick}
+        className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 whitespace-nowrap ${active
+            ? 'bg-zinc-800 text-white shadow-lg shadow-black/20'
+            : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+            }`}
+    >
+        {label}
+    </button>
+);
+
+const HeadCell = ({ children, align = "left", className = "" }) => (
+    <TableHead className={cn(
+        "text-[11px] uppercase tracking-wider font-bold text-zinc-500 h-12",
+        align === "left" && "text-left",
+        align === "right" && "text-right",
+        align === "center" && "text-center",
+        className
+    )}>
+        {children}
+    </TableHead>
+);
+
+const EmptyRow = ({ colSpan }) => (
+    <TableRow className="hover:bg-transparent">
+        <TableCell colSpan={colSpan} className="text-center py-24">
+            <div className="flex flex-col items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-zinc-700" />
+                </div>
+                <p className="text-zinc-500 font-medium">No records found for the selected period.</p>
+                <p className="text-xs text-zinc-600">Try adjusting your filters or date range.</p>
+            </div>
+        </TableCell>
+    </TableRow>
+);
+
 const FinancialReports = () => {
     // State for Date Objects
     const [startDate, setStartDate] = useState(startOfMonth(new Date()));
@@ -59,6 +118,10 @@ const FinancialReports = () => {
     const fromDateStr = startDate ? format(startDate, "yyyy-MM-dd") : undefined;
     const toDateStr = endDate ? format(endDate, "yyyy-MM-dd") : undefined;
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
     const { data: reportsData, isLoading } = useQuery({
         queryKey: ["financialReports", filters, fromDateStr, toDateStr],
         queryFn: () => fetchFinancialReports({
@@ -75,6 +138,30 @@ const FinancialReports = () => {
     const depositRecords = reportsData?.depositRecords || [];
     const applicationsReport = reportsData?.applicationsReport || [];
     const refundsReport = reportsData?.refundsReport?.refunds || [];
+
+    // Reset pagination when data, tab, or items per page changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab, filters, fromDateStr, toDateStr, itemsPerPage]);
+
+    // Pagination Logic
+    const getCurrentData = () => {
+        let data = [];
+        if (activeTab === 'deposits') data = depositRecords;
+        else if (activeTab === 'applications') data = applicationsReport;
+        else if (activeTab === 'refunds') data = refundsReport;
+
+        const totalPages = Math.ceil(data.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return {
+            paginatedData: data.slice(startIndex, endIndex),
+            totalPages,
+            totalItems: data.length
+        };
+    };
+
+    const { paginatedData, totalPages, totalItems } = getCurrentData();
 
     const handleExport = async () => {
         try {
@@ -278,23 +365,48 @@ const FinancialReports = () => {
 
                 {/* Tabs & Table Section */}
                 <div className="space-y-6">
-                    {/* Tabs Navigation */}
-                    <div className="flex p-1 bg-zinc-900/50 rounded-xl border border-white/5 w-full md:w-fit backdrop-blur-sm overflow-x-auto">
-                        <TabButton
-                            active={activeTab === 'deposits'}
-                            onClick={() => setActiveTab('deposits')}
-                            label={`Deposit Records (${depositRecords.length})`}
-                        />
-                        <TabButton
-                            active={activeTab === 'applications'}
-                            onClick={() => setActiveTab('applications')}
-                            label={`Applications Report (${applicationsReport.length})`}
-                        />
-                        <TabButton
-                            active={activeTab === 'refunds'}
-                            onClick={() => setActiveTab('refunds')}
-                            label={`Refunds Report (${refundsReport.length})`}
-                        />
+                    {/* Tabs Navigation & Rows Per Page */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex p-1 bg-zinc-900/50 rounded-xl border border-white/5 w-full md:w-fit backdrop-blur-sm overflow-x-auto">
+                            <TabButton
+                                active={activeTab === 'deposits'}
+                                onClick={() => setActiveTab('deposits')}
+                                label={`Deposit Records (${depositRecords.length})`}
+                            />
+                            <TabButton
+                                active={activeTab === 'applications'}
+                                onClick={() => setActiveTab('applications')}
+                                label={`Applications Report (${applicationsReport.length})`}
+                            />
+                            <TabButton
+                                active={activeTab === 'refunds'}
+                                onClick={() => setActiveTab('refunds')}
+                                label={`Refunds Report (${refundsReport.length})`}
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-6 self-end md:self-auto">
+                            {!isLoading && totalItems > 0 && (
+                                <span className="text-sm text-zinc-400 hidden sm:block">
+                                    Showing <span className="text-zinc-100 font-semibold">{Math.min(totalItems, (currentPage - 1) * itemsPerPage + 1)}</span> to <span className="text-zinc-100 font-semibold">{Math.min(totalItems, currentPage * itemsPerPage)}</span> of <span className="text-zinc-100 font-semibold">{totalItems}</span> results
+                                </span>
+                            )}
+                            <div className="flex items-center gap-3">
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest whitespace-nowrap">Rows per page</span>
+                                <div className="min-w-[100px]">
+                                    <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(Number(val))}>
+                                        <SelectTrigger className="bg-zinc-900/50 border-white/5 h-10 w-full text-xs hover:border-white/10 transition-colors focus:ring-0 backdrop-blur-sm rounded-xl px-4">
+                                            <SelectValue placeholder="10" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-950 border-zinc-800">
+                                            <SelectItem value="10">10 Rows</SelectItem>
+                                            <SelectItem value="25">25 Rows</SelectItem>
+                                            <SelectItem value="50">50 Rows</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Data Table */}
@@ -307,136 +419,136 @@ const FinancialReports = () => {
                         ) : (
                             <div className="w-full overflow-x-auto">
                                 <Table className="w-full">
-                                    <TableHeader className="bg-zinc-950/80 border-b border-white/5">
+                                    <TableHeader className="bg-zinc-950/80 border-b border-white/10">
                                         <TableRow className="border-none hover:bg-transparent">
                                             {activeTab === 'deposits' && (
                                                 <>
-                                                    <HeadCell>Date & Time</HeadCell>
-                                                    {isUserColumnVisible && <HeadCell>User</HeadCell>}
-                                                    <HeadCell>Account Details</HeadCell>
-                                                    <HeadCell>Platform</HeadCell>
-                                                    <HeadCell align="right">Amount</HeadCell>
-                                                    <HeadCell align="right">Fees</HeadCell>
-                                                    <HeadCell align="right">Total</HeadCell>
-                                                    <HeadCell align="center">Status</HeadCell>
+                                                    <HeadCell className="pl-6">Date & Time</HeadCell>
+                                                    {isUserColumnVisible && <HeadCell className="px-4">User</HeadCell>}
+                                                    <HeadCell className="px-4">Account Details</HeadCell>
+                                                    <HeadCell className="px-4">Platform</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Amount</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Fees</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Total</HeadCell>
+                                                    <HeadCell align="center" className="pr-6">Status</HeadCell>
                                                 </>
                                             )}
                                             {activeTab === 'applications' && (
                                                 <>
-                                                    <HeadCell>Date & Time</HeadCell>
-                                                    <HeadCell>User</HeadCell>
-                                                    <HeadCell>Account</HeadCell>
-                                                    <HeadCell>Service</HeadCell>
-                                                    <HeadCell align="right">App Fee</HeadCell>
-                                                    <HeadCell align="right">Deposit</HeadCell>
-                                                    <HeadCell align="right">Total Cost</HeadCell>
-                                                    <HeadCell align="center">Status</HeadCell>
+                                                    <HeadCell className="pl-6">Date & Time</HeadCell>
+                                                    <HeadCell className="px-4">User</HeadCell>
+                                                    <HeadCell className="px-4">Account</HeadCell>
+                                                    <HeadCell className="px-4">Service</HeadCell>
+                                                    <HeadCell align="right" className="px-4">App Fee</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Deposit</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Total Cost</HeadCell>
+                                                    <HeadCell align="center" className="pr-6">Status</HeadCell>
                                                 </>
                                             )}
                                             {activeTab === 'refunds' && (
                                                 <>
-                                                    <HeadCell>Date & Time</HeadCell>
-                                                    <HeadCell>User</HeadCell>
-                                                    <HeadCell>Account</HeadCell>
-                                                    <HeadCell>Platform</HeadCell>
-                                                    <HeadCell align="right">Requested</HeadCell>
-                                                    <HeadCell align="right">Fee Reversal</HeadCell>
-                                                    <HeadCell align="right">Refunded</HeadCell>
-                                                    <HeadCell align="center">Status</HeadCell>
+                                                    <HeadCell className="pl-6">Date & Time</HeadCell>
+                                                    <HeadCell className="px-4">User</HeadCell>
+                                                    <HeadCell className="px-4">Account</HeadCell>
+                                                    <HeadCell className="px-4">Platform</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Requested</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Fee Reversal</HeadCell>
+                                                    <HeadCell align="right" className="px-4">Refunded</HeadCell>
+                                                    <HeadCell align="center" className="pr-6">Status</HeadCell>
                                                 </>
                                             )}
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {/* DEPOSITS TABLE */}
-                                        {activeTab === 'deposits' && depositRecords.map((item, i) => (
-                                            <TableRow key={item.depositId || i} className="group border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                                                <TableCell className="py-4 font-mono text-xs text-zinc-400">
+                                        {activeTab === 'deposits' && paginatedData.map((item, i) => (
+                                            <TableRow key={item.depositId || i} className="group border-b border-white/10 hover:bg-white/[0.02] transition-colors">
+                                                <TableCell className="py-5 pl-6 pr-4 font-mono text-xs text-zinc-400">
                                                     <div>{format(new Date(item.date), "dd MMM yyyy")}</div>
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
                                                 </TableCell>
                                                 {isUserColumnVisible && (
-                                                    <TableCell>
+                                                    <TableCell className="py-5 px-4">
                                                         <div className="flex flex-col">
                                                             <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
                                                             <span className="text-xs text-zinc-500">{item.user?.email}</span>
                                                         </div>
                                                     </TableCell>
                                                 )}
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="font-medium text-zinc-200">{item.adAccountName}</div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className={`w-1.5 h-1.5 rounded-full ${item.platform === 'google' ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
                                                         <span className="capitalize text-zinc-300">{item.platform}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="text-right font-medium text-zinc-300">{formatCurrency(item.amount)}</TableCell>
-                                                <TableCell className="text-right text-xs text-amber-500/80">+{formatCurrency(item.fees)}</TableCell>
-                                                <TableCell className="text-right font-bold text-white text-base">{formatCurrency(item.total)}</TableCell>
-                                                <TableCell className="text-center">{renderStatusBadge(item.status)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right font-medium text-zinc-300">{formatCurrency(item.amount)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right text-xs text-amber-500/80">+{formatCurrency(item.fees)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right font-bold text-white text-base">{formatCurrency(item.total)}</TableCell>
+                                                <TableCell className="py-5 pl-4 pr-6 text-center">{renderStatusBadge(item.status)}</TableCell>
                                             </TableRow>
                                         ))}
 
                                         {/* APPLICATIONS TABLE */}
-                                        {activeTab === 'applications' && applicationsReport.map((item, i) => (
-                                            <TableRow key={i} className="group border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                                                <TableCell className="py-4 font-mono text-xs text-zinc-400">
+                                        {activeTab === 'applications' && paginatedData.map((item, i) => (
+                                            <TableRow key={i} className="group border-b border-white/10 hover:bg-white/[0.02] transition-colors">
+                                                <TableCell className="py-5 pl-6 pr-4 font-mono text-xs text-zinc-400">
                                                     <div>{format(new Date(item.date), "dd MMM yyyy")}</div>
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
                                                         <span className="text-xs text-zinc-500">{item.user?.email}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="font-medium text-zinc-200">{item.accountName}</div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className={`w-1.5 h-1.5 rounded-full ${item.service?.toLowerCase() === 'google' ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
                                                         <span className="capitalize text-zinc-300">{item.service}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="text-right text-zinc-300">{formatCurrency(item.appFee)}</TableCell>
-                                                <TableCell className="text-right text-zinc-300">
+                                                <TableCell className="py-5 px-4 text-right text-zinc-300">{formatCurrency(item.appFee)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right text-zinc-300">
                                                     {formatCurrency(item.deposit)}
                                                     <span className="text-xs text-zinc-600 ml-1 block">(Fee: {formatCurrency(item.depositFee)})</span>
                                                 </TableCell>
-                                                <TableCell className="text-right font-bold text-white text-base">{formatCurrency(item.total)}</TableCell>
-                                                <TableCell className="text-center">{renderStatusBadge(item.status)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right font-bold text-white text-base">{formatCurrency(item.total)}</TableCell>
+                                                <TableCell className="py-5 pl-4 pr-6 text-center">{renderStatusBadge(item.status)}</TableCell>
                                             </TableRow>
                                         ))}
 
                                         {/* REFUNDS TABLE */}
-                                        {activeTab === 'refunds' && refundsReport.map((item, i) => (
-                                            <TableRow key={item.refundId || i} className="group border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                                                <TableCell className="py-4 font-mono text-xs text-zinc-400">
+                                        {activeTab === 'refunds' && paginatedData.map((item, i) => (
+                                            <TableRow key={item.refundId || i} className="group border-b border-white/10 hover:bg-white/[0.02] transition-colors">
+                                                <TableCell className="py-5 pl-6 pr-4 font-mono text-xs text-zinc-400">
                                                     <div>{format(new Date(item.date), "dd MMM yyyy")}</div>
                                                     <div className="text-zinc-600">{format(new Date(item.date), "hh:mm a")}</div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-zinc-200">{item.user?.fullName || item.user?.username || "N/A"}</span>
                                                         <span className="text-xs text-zinc-500">{item.user?.email}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="font-medium text-zinc-200">{item.accountName}</div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="py-5 px-4">
                                                     <div className="flex items-center gap-2">
                                                         <span className={`w-1.5 h-1.5 rounded-full ${item.platform === 'google' ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
                                                         <span className="capitalize text-zinc-300">{item.platform}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="text-right text-zinc-300">{formatCurrency(item.requestedAmount)}</TableCell>
-                                                <TableCell className="text-right text-xs text-amber-500/80">+{formatCurrency(item.feesAmount)}</TableCell>
-                                                <TableCell className="text-right font-bold text-emerald-400 text-base">{formatCurrency(item.totalRefundAmount)}</TableCell>
-                                                <TableCell className="text-center">{renderStatusBadge(item.status)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right text-zinc-300">{formatCurrency(item.requestedAmount)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right text-xs text-amber-500/80">+{formatCurrency(item.feesAmount)}</TableCell>
+                                                <TableCell className="py-5 px-4 text-right font-bold text-emerald-400 text-base">{formatCurrency(item.totalRefundAmount)}</TableCell>
+                                                <TableCell className="py-5 pl-4 pr-6 text-center">{renderStatusBadge(item.status)}</TableCell>
                                             </TableRow>
                                         ))}
 
@@ -449,62 +561,51 @@ const FinancialReports = () => {
                                 </Table>
                             </div>
                         )}
+
+                        {/* Pagination Footer */}
+                        {!isLoading && totalItems > 0 && (
+                            <div className="mt-auto border-t border-white/10 p-4 flex items-center justify-center sm:justify-end bg-zinc-950/30">
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-8 bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                                    >
+                                        Previous
+                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        {[...Array(totalPages)].map((_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                                className={`h-8 w-8 rounded-md text-xs font-medium transition-colors ${currentPage === i + 1
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300'
+                                                    }`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-
-// UI Components to declutter main component
-const SummaryCard = ({ title, value, icon: Icon, color, bg, isLoading }) => (
-    <Card className="group relative overflow-hidden bg-zinc-900/40 border-white/5 hover:border-white/10 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10">
-        <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${bg} blur-2xl opacity-20 group-hover:opacity-40 transition-opacity`}></div>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 z-10 relative">
-            <CardTitle className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">{title}</CardTitle>
-            <div className={`p-2 rounded-lg ${bg} ${color}`}>
-                <Icon className="h-4 w-4" />
-            </div>
-        </CardHeader>
-        <CardContent className="z-10 relative">
-            <div className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
-                {isLoading ? <div className="h-8 w-24 bg-zinc-800 animate-pulse rounded"></div> : value}
-            </div>
-
-        </CardContent>
-    </Card>
-);
-
-const TabButton = ({ active, onClick, label }) => (
-    <button
-        onClick={onClick}
-        className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 whitespace-nowrap ${active
-            ? 'bg-zinc-800 text-white shadow-lg shadow-black/20'
-            : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
-            }`}
-    >
-        {label}
-    </button>
-);
-
-const HeadCell = ({ children, align = "left" }) => (
-    <TableHead className={`text-${align} text-[11px] uppercase tracking-wider font-bold text-zinc-500 h-10`}>
-        {children}
-    </TableHead>
-);
-
-const EmptyRow = ({ colSpan }) => (
-    <TableRow className="hover:bg-transparent">
-        <TableCell colSpan={colSpan} className="text-center py-24">
-            <div className="flex flex-col items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-zinc-700" />
-                </div>
-                <p className="text-zinc-500 font-medium">No records found for the selected period.</p>
-                <p className="text-xs text-zinc-600">Try adjusting your filters or date range.</p>
-            </div>
-        </TableCell>
-    </TableRow>
-);
 
 export default FinancialReports;
