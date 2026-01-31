@@ -37,6 +37,8 @@ import UserWalletManagement from "@/pages/user_wallet_management";
 import AccountClearing from "@/pages/account_clearing";
 import AdminAccountClearingRequests from "@/pages/admin_account_clearing_requests";
 import FinancialReports from "@/pages/financial_reports";
+import BMShare from "@/pages/facebook_bm_share";
+import AdminBMShareRequests from "@/pages/admin_facebook_bm_share";
 
 const Router = () => {
   return (
@@ -65,6 +67,8 @@ const Router = () => {
           <Route path="/dashboard/facebook-deposit-requests" element={<FacebookDepositRequests />} />
           <Route path="/dashboard/my-facebook-accounts" element={<MyFacebookAccounts />} />
           <Route path="/dashboard/facebook-deposits" element={<FacebookDeposits />} />
+          <Route path="/dashboard/facebook-bm-share" element={<BMShare />} />
+          <Route path="/dashboard/facebook-bm-share-requests" element={<AdminBMShareRequests />} />
           <Route path="/dashboard/google-deposits" element={<GoogleDeposits />} />
           <Route path="/dashboard/google-deposit-requests" element={<GoogleDepositRequests />} />
           <Route path="/dashboard/account-clearing" element={<AccountClearing />} />

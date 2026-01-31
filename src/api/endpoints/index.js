@@ -82,4 +82,8 @@ export const endpoints = {
   adminExportFinancialReports: "api/admin/financial-reports/export",
   agentFinancialReports: "api/agent/financial-reports",
   agentExportFinancialReports: "api/agent/financial-reports/export",
+  applyBMShare: "api/bm-share/apply-bm-share",
+  allBMShareRequests: "api/bm-share/get-all-bm-shares",
+  myBMShareRequests: "api/bm-share/get-user-bm-shares",
+  updateBMShareStatus: "api/bm-share/update-bm-share",
 }

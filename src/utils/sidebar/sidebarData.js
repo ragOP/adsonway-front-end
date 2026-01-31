@@ -156,6 +156,18 @@ export const data = {
           icon: FileText,
           roles: ["user"],
         },
+        {
+          title: "BM Share",
+          url: "/dashboard/facebook-bm-share",
+          icon: FileText,
+          roles: ["user"],
+        },
+        {
+          title: "BM Share Requests",
+          url: "/dashboard/facebook-bm-share-requests",
+          icon: FileText,
+          roles: ["admin"],
+        },
       ],
       roles: ["admin", "user"],
     },

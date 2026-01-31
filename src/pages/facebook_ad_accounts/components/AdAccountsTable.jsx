@@ -6,14 +6,21 @@ import { fetchMyAdAccounts } from "../helpers/fetchMyAdAccounts";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ViewAdAccountDialog from "./ViewAdAccountDialog";
+import BMShareDialog from "./BMShareDialog";
 
 const AdAccountsTable = ({ setTotalRecords, params, onPageChange }) => {
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
+    const [bmShareDialogOpen, setBmShareDialogOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
 
     const handleView = (account) => {
         setSelectedAccount(account);
         setViewDialogOpen(true);
+    };
+
+    const handleBMShare = (account) => {
+        setSelectedAccount(account);
+        setBmShareDialogOpen(true);
     };
 
     const {
@@ -84,13 +91,23 @@ const AdAccountsTable = ({ setTotalRecords, params, onPageChange }) => {
         {
             key: "status",
             label: "Status",
-            render: (value) => (
-                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium capitalize ${value === "active" ? "bg-green-500/20 text-green-400" :
-                    value === "pending" ? "bg-yellow-500/20 text-yellow-400" :
-                        "bg-red-500/20 text-red-400"
-                    }`}>
-                    {value || "N/A"}
-                </span>
+            render: (value, row) => (
+                <div className="flex items-center gap-2">
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium capitalize ${value === "active" ? "bg-green-500/20 text-green-400" :
+                        value === "pending" ? "bg-yellow-500/20 text-yellow-400" :
+                            "bg-red-500/20 text-red-400"
+                        }`}>
+                        {value || "N/A"}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-3 text-xs bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border-indigo-500/20 hover:border-indigo-500/40"
+                        onClick={() => handleBMShare(row)}
+                    >
+                        BM share
+                    </Button>
+                </div>
             ),
         },
         {
@@ -127,6 +144,12 @@ const AdAccountsTable = ({ setTotalRecords, params, onPageChange }) => {
                 open={viewDialogOpen}
                 onOpenChange={setViewDialogOpen}
                 data={selectedAccount}
+            />
+
+            <BMShareDialog
+                open={bmShareDialogOpen}
+                onOpenChange={setBmShareDialogOpen}
+                initialAccount={selectedAccount}
             />
         </>
     );
