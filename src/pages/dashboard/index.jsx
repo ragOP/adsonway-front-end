@@ -13,7 +13,7 @@ const Dashboard = () => {
 
       <NewDashboard />
       <DashboardCharts />
-      <ProductsTable />
+      {/* <ProductsTable /> */}
 
     </div>
   );

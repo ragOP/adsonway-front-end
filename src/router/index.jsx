@@ -39,6 +39,9 @@ import AdminAccountClearingRequests from "@/pages/admin_account_clearing_request
 import FinancialReports from "@/pages/financial_reports";
 import BMShare from "@/pages/facebook_bm_share";
 import AdminBMShareRequests from "@/pages/admin_facebook_bm_share";
+import Config from "@/pages/config";
+import AgentCommission from "@/pages/admin/agent_commission";
+
 
 const Router = () => {
   return (
@@ -74,6 +77,9 @@ const Router = () => {
           <Route path="/dashboard/account-clearing" element={<AccountClearing />} />
           <Route path="/dashboard/account-clearing-requests" element={<AdminAccountClearingRequests />} />
           <Route path="/dashboard/financial-reports" element={<FinancialReports />} />
+          <Route path="/dashboard/agent-commission" element={<AgentCommission />} />
+          <Route path="/dashboard/config" element={<Config />} />
+
           {/* Blogs */}
           <Route path="/dashboard/blogs" element={<Blogs />} />
           <Route path="/dashboard/blogs/add" element={<BlogEditor />} />

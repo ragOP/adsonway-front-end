@@ -68,6 +68,15 @@ const AgentsTable = ({ setAgentsLength, params, setParams }) => {
             ),
         },
         {
+            key: "username",
+            label: "Username",
+            render: (value) => (
+                <Typography variant="p" className="text-zinc-400 text-sm font-mono">
+                    {value}
+                </Typography>
+            ),
+        },
+        {
             key: "email",
             label: "Email",
             render: (value, row) => (
@@ -76,6 +85,15 @@ const AgentsTable = ({ setAgentsLength, params, setParams }) => {
                         {row.email}
                     </Typography>
                 </div>
+            ),
+        },
+        {
+            key: "commision_percent",
+            label: "Commission (%)",
+            render: (value) => (
+                <Typography variant="p" className="text-white">
+                    {value || 0}%
+                </Typography>
             ),
         },
         {

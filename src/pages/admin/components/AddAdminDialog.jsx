@@ -169,7 +169,7 @@ const AddAdminDialog = ({ open, onClose }) => {
                     </DialogFooter>
                 </form>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

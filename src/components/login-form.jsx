@@ -59,6 +59,7 @@ export function LoginForm() {
         userIsVerified: user?.isVerified,
         userCreatedAt: user?.createdAt,
         userUpdatedAt: user?.updatedAt,
+        userCommisionPercent: user?.commision_percent,
       });
 
 

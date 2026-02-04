@@ -73,6 +73,13 @@ export function Navbar() {
                         </span>
                     </div>
                 )}
+                {userRole === "agent" && (
+                    <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50">
+                        <span className="text-sm font-semibold text-white">
+                            Commission Fee : {getItem("userCommisionPercent") || 0}%
+                        </span>
+                    </div>
+                )}
 
                 <Avatar className="h-8 w-8 cursor-pointer" onClick={() => setOpenProfile(true)}>
                     <AvatarImage src={userAvatar} alt={displayName} />

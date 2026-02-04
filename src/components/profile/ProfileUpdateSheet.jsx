@@ -216,31 +216,33 @@ const ProfileUpdateSheet = ({ open, onClose }) => {
                             />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">New Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Leave blank to keep current"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="pr-10"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    {showPassword ? (
-                                        <Eye className="w-4 h-4" />
-                                    ) : (
-                                        <EyeOff className="w-4 h-4" />
-                                    )}
-                                </button>
+                        {getItem("userRole") === "admin" && (
+                            <div className="grid gap-2">
+                                <Label htmlFor="password">New Password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Leave blank to keep current"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        {showPassword ? (
+                                            <Eye className="w-4 h-4" />
+                                        ) : (
+                                            <EyeOff className="w-4 h-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     <SheetFooter>

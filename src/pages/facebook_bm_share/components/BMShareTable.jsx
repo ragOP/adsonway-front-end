@@ -97,7 +97,6 @@ const BMShareTable = ({ setTotalRecords, params, onPageChange }) => {
         },
     ];
 
-    // Add Actions column for Admins
     if (userRole === "admin") {
         columns.push({
             key: "actions",

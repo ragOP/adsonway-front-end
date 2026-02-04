@@ -26,8 +26,6 @@ const NewDashboard = () => {
         const role = getItem("userRole");
         setUserRole(role || "User");
     }, []);
-
-    // Get current date and time-based greeting
     const today = new Date();
     const hours = today.getHours();
 

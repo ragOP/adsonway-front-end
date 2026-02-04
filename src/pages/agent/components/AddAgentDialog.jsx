@@ -25,6 +25,7 @@ const AddAgentDialog = ({ open, onClose }) => {
         username: "",
         password: "",
         role: "agent",
+        commision_percent: "",
     });
 
     const handleChange = (e) => {
@@ -38,6 +39,7 @@ const AddAgentDialog = ({ open, onClose }) => {
             username: "",
             password: "",
             role: "agent",
+            commision_percent: "",
         });
     };
 
@@ -153,6 +155,18 @@ const AddAgentDialog = ({ open, onClose }) => {
                                 onChange={handleChange}
                                 disabled
                                 className="bg-muted"
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="commision_percent">Commission Percent</Label>
+                            <Input
+                                id="commision_percent"
+                                name="commision_percent"
+                                type="number"
+                                placeholder="Enter commission percent"
+                                value={formData.commision_percent}
+                                onChange={handleChange}
+                                required
                             />
                         </div>
                     </div>

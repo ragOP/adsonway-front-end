@@ -80,6 +80,15 @@ const AdminsTable = ({ setadminsLength, params, setParams }) => {
       ),
     },
     {
+      key: "username",
+      label: "Username",
+      render: (value) => (
+        <Typography variant="p" className="text-zinc-400 text-sm font-mono">
+          {value}
+        </Typography>
+      ),
+    },
+    {
       key: "email",
       label: "Email",
       render: (value, row) => (

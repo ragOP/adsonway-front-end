@@ -86,4 +86,9 @@ export const endpoints = {
   allBMShareRequests: "api/bm-share/get-all-bm-shares",
   myBMShareRequests: "api/bm-share/get-user-bm-shares",
   updateBMShareStatus: "api/bm-share/update-bm-share",
-}
+  adjustPlatformFee: "api/admin/adjust-platform-fee",
+  getConfig: "api/admin/get-config",
+  agentCommission: "api/agent-commission/admin/all",
+  viewAgentCommission: "api/agent-commission/admin/agent",
+  payAgentCommission: "api/agent-commission/admin/agent",
+};
