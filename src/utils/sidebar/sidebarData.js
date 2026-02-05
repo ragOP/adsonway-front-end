@@ -131,6 +131,14 @@ export const data = {
       roles: ["admin"],
     },
     {
+      title: "My Commission Report",
+      url: "/dashboard/my-commission-report",
+      icon: BarChart,
+      isActive: true,
+      items: [],
+      roles: ["agent"],
+    },
+    {
       title: "Facebook",
       url: "#",
       icon: Facebook,

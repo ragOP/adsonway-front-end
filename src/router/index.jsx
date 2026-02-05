@@ -41,6 +41,7 @@ import BMShare from "@/pages/facebook_bm_share";
 import AdminBMShareRequests from "@/pages/admin_facebook_bm_share";
 import Config from "@/pages/config";
 import AgentCommission from "@/pages/admin/agent_commission";
+import MyCommission from "@/pages/agent/my_commission";
 
 
 const Router = () => {
@@ -78,6 +79,7 @@ const Router = () => {
           <Route path="/dashboard/account-clearing-requests" element={<AdminAccountClearingRequests />} />
           <Route path="/dashboard/financial-reports" element={<FinancialReports />} />
           <Route path="/dashboard/agent-commission" element={<AgentCommission />} />
+          <Route path="/dashboard/my-commission-report" element={<MyCommission />} />
           <Route path="/dashboard/config" element={<Config />} />
 
           {/* Blogs */}

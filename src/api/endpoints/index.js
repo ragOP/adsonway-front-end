@@ -91,4 +91,6 @@ export const endpoints = {
   agentCommission: "api/agent-commission/admin/all",
   viewAgentCommission: "api/agent-commission/admin/agent",
   payAgentCommission: "api/agent-commission/admin/agent",
+  myAgentCommission: "api/agent-commission/my-reports",
+  mySingleAgentCommissionReport: "api/agent-commission/my-report",
 };
