@@ -17,6 +17,8 @@ const Wallet = () => {
         search: "",
         start_date: undefined,
         end_date: undefined,
+        sort: "-createdAt",
+
     });
 
     const userRole = getItem("userRole");

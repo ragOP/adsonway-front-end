@@ -88,11 +88,20 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                 queryClient.invalidateQueries(["myTransactions"]);
                 queryClient.invalidateQueries(["myWallet"]);
             } else {
-                toast.error(data?.response?.message || "Failed to submit application");
+                // Handle different error structures from apiService
+                // Success case returns { response: body }
+                // Error case returns { success: false, response: axiosResponse, ... }
+                const errorMessage = data?.response?.data?.message
+                    || data?.response?.message
+                    || data?.message
+                    || "Failed to submit application";
+
+                toast.error(errorMessage);
             }
         },
-        onError: () => {
-            toast.error("An error occurred");
+        onError: (error) => {
+            console.error(error);
+            toast.error(error?.response?.data?.message || error?.message || "An error occurred");
         }
     });
 
@@ -222,12 +231,11 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
         const payload = {
             licenseType: formData.licenseType === "New License" ? "new" : "existing",
             licenseNumber: formData.licenseNumber,
-            // If strictly needing the ID for existing, we assume licenseNumber holds it or we handled it in selection
             numberOfPages: parseInt(formData.numberOfPages),
             pageUrls: formData.pageUrls,
             hasFullAdminAccess: formData.hasFullAdminAccess,
-            numberOfDomains: parseInt(formData.numberOfDomains),
-            domainUrls: formData.domainUrls,
+            numberOfDomains: formData.numberOfDomains === "unlimited" ? "unlimited" : parseInt(formData.numberOfDomains),
+            domainUrls: formData.numberOfDomains === "unlimited" ? [] : formData.domainUrls,
             numberOfAccounts: formData.adAccounts.length,
             submissionFee: totalCost,
             adAccounts: formData.adAccounts.map(acc => ({
@@ -412,7 +420,17 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                             <Label className="font-semibold text-sm">Number of Domains *</Label>
                             <Select
                                 value={formData.numberOfDomains}
-                                onValueChange={(val) => handleCountChange("domainUrls", "numberOfDomains", val)}
+                                onValueChange={(val) => {
+                                    if (val === "unlimited") {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            numberOfDomains: "unlimited",
+                                            domainUrls: []
+                                        }));
+                                    } else {
+                                        handleCountChange("domainUrls", "numberOfDomains", val);
+                                    }
+                                }}
                             >
                                 <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
                                     <SelectValue placeholder="Select number of domains" />
@@ -421,11 +439,12 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                                     {[0, 1, 2, 3, 4, 5].map(num => (
                                         <SelectItem key={num} value={num.toString()}>{num === 0 ? "Select number of domains" : num}</SelectItem>
                                     ))}
+                                    <SelectItem value="unlimited">Unlimited</SelectItem>
                                 </SelectContent>
                             </Select>
 
                             {/* Dynamic Domain Inputs */}
-                            {formData.domainUrls.map((url, index) => (
+                            {formData.numberOfDomains !== "unlimited" && formData.domainUrls.map((url, index) => (
                                 <div key={index} className="space-y-1 animate-in slide-in-from-top-2">
                                     <Input
                                         placeholder={`Domain URL #${index + 1}`}
