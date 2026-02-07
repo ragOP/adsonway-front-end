@@ -44,7 +44,7 @@ const AddTopUpRequestDialog = ({ open, setOpen, editId = null }) => {
     // Fetch payment methods
     const { data: paymentMethods = [] } = useQuery({
         queryKey: ["paymentMethods"],
-        queryFn: () => fetchPayments({ params: { is_active: true } }),
+        queryFn: () => fetchPayments({ params: { isUser: true } }),
     });
 
     // Fetch top-up request data when editing
@@ -196,23 +196,44 @@ const AddTopUpRequestDialog = ({ open, setOpen, editId = null }) => {
                                 {/* Payment Instructions Display */}
                                 {(() => {
                                     const selectedMethod = paymentMethods.find(m => m._id === formData.paymentMethodId);
-                                    if (!selectedMethod?.description) return null;
+                                    if (!selectedMethod) return null;
+
+                                    const qrImage = selectedMethod.qr_image || selectedMethod.qr_code;
 
                                     return (
-                                        <div className="mt-2 p-4 rounded-xl bg-blue-500/10 border-2 border-dashed border-blue-500/30 animate-in fade-in zoom-in-95 duration-300 relative group overflow-hidden">
-                                            {/* Decorative background glow */}
-                                            <div className="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 blur-2xl rounded-full" />
+                                        <>
+                                            {/* Description Block */}
+                                            {selectedMethod.description && (
+                                                <div className="mt-2 p-4 rounded-xl bg-blue-500/10 border-2 border-dashed border-blue-500/30 animate-in fade-in zoom-in-95 duration-300 relative group overflow-hidden">
+                                                    <div className="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/10 blur-2xl rounded-full" />
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h4 className="text-[11px] font-bold uppercase tracking-widest text-blue-400/90">
+                                                            Payment Instructions
+                                                        </h4>
+                                                    </div>
+                                                    <p className="relative z-10 text-[15px] font-bold text-blue-200 leading-relaxed break-all">
+                                                        {selectedMethod.description}
+                                                    </p>
+                                                </div>
+                                            )}
 
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-blue-400/90">
-                                                    Payment Instructions
-                                                </h4>
-                                            </div>
-
-                                            <p className="relative z-10 text-[15px] font-bold text-blue-200 leading-relaxed break-all">
-                                                {selectedMethod.description}
-                                            </p>
-                                        </div>
+                                            {/* QR Code Block */}
+                                            {qrImage && (
+                                                <div className="mt-2">
+                                                    <Label className="mb-2 block text-blue-400">Scan to Pay</Label>
+                                                    <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-300">
+                                                        <div className="bg-white p-2 rounded-lg shadow-lg">
+                                                            <img
+                                                                src={qrImage}
+                                                                alt="Payment QR Code"
+                                                                className="h-48 w-48 object-contain"
+                                                            />
+                                                        </div>
+                                                        <p className="mt-2 text-xs text-gray-400">Scan this QR code to complete payment</p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
                                     );
                                 })()}
                             </div>

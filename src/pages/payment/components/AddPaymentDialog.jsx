@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { createPayment } from "../helpers/createPayment";
 import { updatePayment } from "../helpers/updatePayment";
 import { fetchSinglePayment } from "../helpers/fetchSinglePayment";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
+import { uploadFile } from "@/helpers/uploadFile";
 
 const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
     const queryClient = useQueryClient();
@@ -25,9 +26,10 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
         name: "",
         description: "",
         is_active: true,
+        qr_image: "",
     });
+    const [isUploading, setIsUploading] = useState(false);
 
-    // Fetch payment data when editing
     const { data: paymentData, isLoading: isFetching } = useQuery({
         queryKey: ["payment", editId],
         queryFn: () => fetchSinglePayment(editId),
@@ -39,6 +41,7 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
                 name: paymentData.name || "",
                 description: paymentData.description || "",
                 is_active: paymentData.is_active ?? true,
+                qr_code: paymentData.qr_image || paymentData.qr_code || "",
             });
         }
     }, [paymentData, isEditMode]);
@@ -48,6 +51,7 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
                 name: "",
                 description: "",
                 is_active: true,
+                qr_code: "",
             });
         }
     }, [open]);
@@ -85,10 +89,15 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
             return;
         }
 
+        const submissionData = {
+            ...formData,
+            qr_image: formData.qr_code || "https://placehold.co/600x400?text=No+Screenshot",
+        };
+
         if (isEditMode) {
-            updateMutation({ id: editId, data: formData });
+            updateMutation({ id: editId, data: submissionData });
         } else {
-            createMutation(formData);
+            createMutation(submissionData);
         }
     };
 
@@ -101,6 +110,27 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
             setFormData({ ...formData, [name]: value === "true" });
         } else {
             setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const res = await uploadFile(file);
+            if (res.response?.success) {
+                setFormData(prev => ({ ...prev, qr_code: res.response.data.url }));
+                toast.success("QR Code uploaded successfully");
+            } else {
+                toast.error(res.response?.message || "Upload failed");
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            toast.error("An error occurred during upload");
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -137,6 +167,49 @@ const AddPaymentDialog = ({ open, setOpen, editId = null }) => {
                                 onChange={handleChange}
                                 placeholder="e.g., Google Pay, PhonePe, Paytm"
                             />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="qr_code">QR Code (Optional)</Label>
+                            {formData.qr_code ? (
+                                <div className="relative mt-2 border rounded-md p-2 flex items-center justify-between bg-card/50">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <img
+                                            src={formData.qr_code}
+                                            alt="QR Code"
+                                            className="h-12 w-12 object-cover rounded border"
+                                        />
+                                        <span className="text-xs truncate text-gray-400">QR Code Uploaded</span>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => setFormData(prev => ({ ...prev, qr_code: "" }))}
+                                        className="h-8 w-8 text-red-400 hover:text-red-500 hover:bg-red-500/10"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all">
+                                        {isUploading ? (
+                                            <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                                        ) : (
+                                            <Upload className="h-8 w-8 text-gray-400" />
+                                        )}
+                                        <p className="text-xs text-center text-gray-500">
+                                            {isUploading ? "Uploading..." : "Click to upload QR Code image"}
+                                        </p>
+                                        <Input
+                                            type="file"
+                                            onChange={handleFileUpload}
+                                            className="absolute inset-0 opacity-0 cursor-pointer h-full"
+                                            accept="image/*"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="is_active">Status</Label>
