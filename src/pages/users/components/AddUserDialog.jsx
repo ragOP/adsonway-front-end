@@ -26,12 +26,12 @@ const AddUserDialog = ({ open, onClose }) => {
         role: "user",
         facebook_commission: "",
         google_commission: "",
-        snapchat_commission: "",
-        tiktok_commission: "",
+        facebook_credit_commission: "",
+        // google_credit_commission: "",
         facebook_application_fee: "",
         google_application_fee: "",
-        snapchat_application_fee: "",
-        tiktok_application_fee: "",
+        facebook_credit_application_fee: "",
+        // google_credit_application_fee: "",
     });
 
     const handleChange = (e) => {
@@ -47,12 +47,12 @@ const AddUserDialog = ({ open, onClose }) => {
             role: "user",
             facebook_commission: "",
             google_commission: "",
-            snapchat_commission: "",
-            tiktok_commission: "",
+            facebook_credit_commission: "",
+            google_credit_commission: "",
             facebook_application_fee: "",
             google_application_fee: "",
-            snapchat_application_fee: "",
-            tiktok_application_fee: "",
+            facebook_credit_application_fee: "",
+            google_credit_application_fee: "",
         });
     };
 
@@ -169,11 +169,13 @@ const AddUserDialog = ({ open, onClose }) => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
+                            {/* Facebook */}
                             <div className="grid gap-2">
                                 <Label htmlFor="facebook_commission">Facebook Commission (%)</Label>
                                 <Input
                                     id="facebook_commission"
                                     name="facebook_commission"
+                                    type="number"
                                     value={formData.facebook_commission}
                                     onChange={handleChange}
                                     required
@@ -184,16 +186,42 @@ const AddUserDialog = ({ open, onClose }) => {
                                 <Input
                                     id="facebook_application_fee"
                                     name="facebook_application_fee"
+                                    type="number"
                                     value={formData.facebook_application_fee}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
+                                <Label htmlFor="facebook_credit_commission">Facebook Credit Comm (%)</Label>
+                                <Input
+                                    id="facebook_credit_commission"
+                                    name="facebook_credit_commission"
+                                    type="number"
+                                    value={formData.facebook_credit_commission}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="facebook_credit_application_fee">Facebook Credit App Fee</Label>
+                                <Input
+                                    id="facebook_credit_application_fee"
+                                    name="facebook_credit_application_fee"
+                                    type="number"
+                                    value={formData.facebook_credit_application_fee}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            {/* Google */}
+                            <div className="grid gap-2">
                                 <Label htmlFor="google_commission">Google Commission (%)</Label>
                                 <Input
                                     id="google_commission"
                                     name="google_commission"
+                                    type="number"
                                     value={formData.google_commission}
                                     onChange={handleChange}
                                     required
@@ -204,51 +232,34 @@ const AddUserDialog = ({ open, onClose }) => {
                                 <Input
                                     id="google_application_fee"
                                     name="google_application_fee"
+                                    type="number"
                                     value={formData.google_application_fee}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="snapchat_commission">Snapchat Commission (%)</Label>
+                            {/* <div className="grid gap-2">
+                                <Label htmlFor="google_credit_commission">Google Credit Comm (%)</Label>
                                 <Input
-                                    id="snapchat_commission"
-                                    name="snapchat_commission"
-                                    value={formData.snapchat_commission}
+                                    id="google_credit_commission"
+                                    name="google_credit_commission"
+                                    type="number"
+                                    value={formData.google_credit_commission}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="snapchat_application_fee">Snapchat App Fee</Label>
+                                <Label htmlFor="google_credit_application_fee">Google Credit App Fee</Label>
                                 <Input
-                                    id="snapchat_application_fee"
-                                    name="snapchat_application_fee"
-                                    value={formData.snapchat_application_fee}
+                                    id="google_credit_application_fee"
+                                    name="google_credit_application_fee"
+                                    type="number"
+                                    value={formData.google_credit_application_fee}
                                     onChange={handleChange}
                                     required
                                 />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="tiktok_commission">TikTok Commission (%)</Label>
-                                <Input
-                                    id="tiktok_commission"
-                                    name="tiktok_commission"
-                                    value={formData.tiktok_commission}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="tiktok_application_fee">TikTok App Fee</Label>
-                                <Input
-                                    id="tiktok_application_fee"
-                                    name="tiktok_application_fee"
-                                    value={formData.tiktok_application_fee}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
+                            </div> */}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="role">Role</Label>

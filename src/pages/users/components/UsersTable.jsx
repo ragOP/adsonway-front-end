@@ -82,6 +82,15 @@ const UsersTable = ({ setUsersLength, params }) => {
             ),
         },
         {
+            key: "username",
+            label: "Username",
+            render: (value) => (
+                <Typography variant="p" className="text-white">
+                    {value}
+                </Typography>
+            ),
+        },
+        {
             key: "email",
             label: "Email",
             render: (value, row) => (
@@ -90,15 +99,6 @@ const UsersTable = ({ setUsersLength, params }) => {
                         {row.email}
                     </Typography>
                 </div>
-            ),
-        },
-        {
-            key: "role",
-            label: "Role",
-            render: (value) => (
-                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-teal-500/20 text-teal-400 capitalize">
-                    {value}
-                </span>
             ),
         },
         {

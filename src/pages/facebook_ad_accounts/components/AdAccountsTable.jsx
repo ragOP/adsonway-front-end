@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import ViewAdAccountDialog from "./ViewAdAccountDialog";
 import BMShareDialog from "./BMShareDialog";
 
+import { useCardContext } from "@/context/CardContext";
+
 const AdAccountsTable = ({ setTotalRecords, params, onPageChange }) => {
+    const { isCard } = useCardContext();
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [bmShareDialogOpen, setBmShareDialogOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
@@ -28,8 +31,8 @@ const AdAccountsTable = ({ setTotalRecords, params, onPageChange }) => {
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["myFacebookAccounts", params],
-        queryFn: () => fetchMyAdAccounts({ params }),
+        queryKey: ["myFacebookAccounts", params, isCard],
+        queryFn: () => fetchMyAdAccounts({ params: { ...params, isCard } }),
     });
 
     const records = dataRes?.accounts || [];

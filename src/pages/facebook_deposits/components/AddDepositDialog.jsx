@@ -19,7 +19,10 @@ import { fetchMyAdAccounts } from "@/pages/facebook_ad_accounts/helpers/fetchMyA
 import { addMoneyToFacebookAccount } from "../helpers/addMoneyToFacebookAccount";
 import { accountAmounts } from "@/pages/facebook_ad_application/constants";
 
+import { useCardContext } from "@/context/CardContext";
+
 const AddDepositDialog = ({ open, onOpenChange }) => {
+    const { isCard } = useCardContext();
     const queryClient = useQueryClient();
 
     const [formData, setFormData] = useState({
@@ -36,13 +39,15 @@ const AddDepositDialog = ({ open, onOpenChange }) => {
 
     // Fetch Active Facebook Accounts
     const { data: accountsData, isLoading: isLoadingAccounts } = useQuery({
-        queryKey: ["myActiveFacebookAccountsForDeposit"],
-        queryFn: () => fetchMyAdAccounts({ params: { status: "active", limit: 100 } }),
+        queryKey: ["myActiveFacebookAccountsForDeposit", isCard],
+        queryFn: () => fetchMyAdAccounts({ params: { status: "active", limit: 100, isCard } }),
         enabled: open,
     });
 
     const activeAccounts = accountsData?.accounts || [];
-    const commissionPercent = walletData?.paymentFeeRule?.facebook_commission || 0;
+    const commissionPercent = isCard
+        ? walletData?.paymentFeeRule?.facebook_credit_commission || 0
+        : walletData?.paymentFeeRule?.facebook_commission || 0;
 
     const mutation = useMutation({
         mutationFn: (payload) => addMoneyToFacebookAccount({ id: formData.accountId, data: payload }),
@@ -77,6 +82,7 @@ const AddDepositDialog = ({ open, onOpenChange }) => {
         const payload = {
             amount: parseInt(formData.amount, 10),
             remarks: formData.remarks || "Topup request",
+            isCard: isCard,
         };
 
         mutation.mutate(payload);

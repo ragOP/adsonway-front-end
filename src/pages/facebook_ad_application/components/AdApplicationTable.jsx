@@ -7,18 +7,20 @@ import { fetchAdApplications } from "../helpers/fetchAdApplications";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ViewAdApplicationDialog from "./ViewAdApplicationDialog";
+import { useCardContext } from "@/context/CardContext";
 
 const AdApplicationTable = ({ setTotalRecords, params, onPageChange }) => {
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const { isCard } = useCardContext();
 
     const {
         data: dataRes,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["facebookAdApplications", params],
-        queryFn: () => fetchAdApplications({ params }),
+        queryKey: ["facebookAdApplications", params, isCard],
+        queryFn: (() => fetchAdApplications({ params: { ...params, isCard: isCard } })),
     });
     const records = dataRes?.applications || dataRes?.data || [];
     const totalRecords = records?.length || 0;
@@ -108,6 +110,17 @@ const AdApplicationTable = ({ setTotalRecords, params, onPageChange }) => {
                 </span>
             ),
         },
+        {
+            key: "isCard",
+            label: "Mode",
+            render: (value) => (
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium capitalize ${value ? "bg-purple-500/20 text-purple-400" : "bg-blue-500/20 text-blue-400"
+                    }`}>
+                    {value ? "Credit Line" : "Card Line"}
+                </span>
+            ),
+        },
+
         {
             key: "createdAt",
             label: "Date",

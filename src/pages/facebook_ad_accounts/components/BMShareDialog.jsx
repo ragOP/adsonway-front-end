@@ -22,17 +22,18 @@ import { Plus, Info, Share2, Loader2, Receipt, Trash2, ShieldCheck } from "lucid
 import { toast } from "sonner";
 import { applyBMShare } from "../helpers/applyBMShare";
 import { Card, CardContent } from "@/components/ui/card";
+import { useCardContext } from "@/context/CardContext";
 
 const BMShareDialog = ({ open, onOpenChange, initialAccount }) => {
-    // Fetch all active accounts for the dropdown
+    const { isCard } = useCardContext();
     const { data: accountsData, isLoading: isLoadingAccounts } = useQuery({
-        queryKey: ["myFacebookAccountsForBMShare"],
-        queryFn: () => fetchMyAdAccounts({ params: { limit: 1000, sort: -1 } }),
+        queryKey: ["myFacebookAccountsForBMShare", isCard],
+        queryFn: () => fetchMyAdAccounts({ params: { limit: 1000, sort: -1, isCard } }),
         enabled: open,
     });
 
     const accounts = accountsData?.accounts || [];
-    const availableAccounts = accounts; // Show all accounts as requested
+    const availableAccounts = accounts;
 
     const [requests, setRequests] = useState([
         { account: "", shared_id: "", notes: "" }
@@ -80,16 +81,14 @@ const BMShareDialog = ({ open, onOpenChange, initialAccount }) => {
 
         setIsSubmitting(true);
         try {
-            // Processing sequentially for better error handling/feedback
             let successCount = 0;
             for (const req of requests) {
-                // Find account details to get the account_name and _id for payload
                 const accountDetails = accounts.find(a => a._id === req.account);
-
                 const payload = {
                     shared_id: req.shared_id,
-                    account: accountDetails?._id, // Internal ID goes into "account" field
+                    account: accountDetails?._id,
                     notes: req.notes,
+                    isCard: isCard,
                 };
 
                 const result = await applyBMShare(payload);

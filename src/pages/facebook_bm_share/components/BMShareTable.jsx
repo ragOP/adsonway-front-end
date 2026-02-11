@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { getItem } from "@/utils/local_storage";
 import UpdateBMShareStatusDialog from "./UpdateBMShareStatusDialog";
 
+import { useCardContext } from "@/context/CardContext";
+
 const BMShareTable = ({ setTotalRecords, params, onPageChange }) => {
+    const { isCard } = useCardContext();
     const userRole = getItem("userRole");
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -18,8 +21,8 @@ const BMShareTable = ({ setTotalRecords, params, onPageChange }) => {
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["facebookBMShareRequests", params],
-        queryFn: () => fetchBMShareRequests({ params }),
+        queryKey: ["facebookBMShareRequests", params, isCard],
+        queryFn: () => fetchBMShareRequests({ params: { ...params, isCard } }),
     });
 
     const records = Array.isArray(dataRes?.data) ? dataRes.data : dataRes?.data?.shares || [];
@@ -81,6 +84,16 @@ const BMShareTable = ({ setTotalRecords, params, onPageChange }) => {
                 <Typography className="text-gray-300 text-sm font-mono">
                     {value || "N/A"}
                 </Typography>
+            ),
+        },
+        {
+            key: "isCard",
+            label: "Mode",
+            render: (value) => (
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium capitalize ${value ? "bg-purple-500/20 text-purple-400" : "bg-blue-500/20 text-blue-400"
+                    }`}>
+                    {value ? "Credit Line" : "Card Line"}
+                </span>
             ),
         },
         {

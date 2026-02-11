@@ -5,15 +5,18 @@ import Typography from "@/components/typography";
 import { fetchMyFacebookDeposits } from "../helpers/fetchMyFacebookDeposits";
 import { format } from "date-fns";
 
+import { useCardContext } from "@/context/CardContext";
+
 const FacebookDepositsTable = ({ setTotalRecords, params, onPageChange }) => {
+    const { isCard } = useCardContext();
 
     const {
         data: dataRes,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["myFacebookDeposits", params],
-        queryFn: () => fetchMyFacebookDeposits({ params }),
+        queryKey: ["myFacebookDeposits", params, isCard],
+        queryFn: () => fetchMyFacebookDeposits({ params: { ...params, isCard } }),
     });
 
     // Adjust these accessors based on actual API response

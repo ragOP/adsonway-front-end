@@ -8,6 +8,9 @@ import { useQuery } from "@tanstack/react-query"
 import { getItem } from "@/utils/local_storage"
 import { fetchMyWallet } from "./navbar/helpers/fetchMyWallet"
 import ProfileUpdateSheet from "@/components/profile/ProfileUpdateSheet"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { useCardContext } from "@/context/CardContext"
 
 export function Navbar() {
     const userRole = getItem("userRole");
@@ -15,6 +18,7 @@ export function Navbar() {
     const userName = getItem("userName");
     const userAvatar = getItem("userDisplayPicture");
     const [openProfile, setOpenProfile] = useState(false);
+    const { isCard, setIsCard } = useCardContext();
 
     const getInitials = (name) => {
         if (!name) return "U";
@@ -64,6 +68,20 @@ export function Navbar() {
                     <Bell className="h-5 w-5 text-muted-foreground" />
                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button> */}
+
+                {userRole === "user" && (
+                    <div className="flex items-center gap-2">
+                        <Label htmlFor="card-mode" className="text-sm font-medium text-muted-foreground">
+                            {isCard ? "Credit Line Mode" : "Card Line Mode"}
+                        </Label>
+                        <Switch
+                            id="card-mode"
+                            checked={isCard}
+                            onCheckedChange={setIsCard}
+                            className="data-[state=checked]:bg-blue-600"
+                        />
+                    </div>
+                )}
 
                 {userRole === "user" && (
                     <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-full border border-border/50">

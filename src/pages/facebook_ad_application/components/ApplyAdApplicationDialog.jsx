@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useEffect } from "react";
+import { useCardContext } from "@/context/CardContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,7 @@ import { fetchMyAdAccounts } from "../../facebook_ad_accounts/helpers/fetchMyAdA
 
 const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
     const queryClient = useQueryClient();
+    const { isCard } = useCardContext();
 
     // Form State
     const [formData, setFormData] = useState({
@@ -73,8 +75,12 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
     });
 
     const fees = {
-        applicationFee: walletData?.paymentFeeRule?.facebook_application_fee || 0,
-        commissionPercent: walletData?.paymentFeeRule?.facebook_commission || 0,
+        applicationFee: isCard
+            ? (walletData?.paymentFeeRule?.facebook_credit_application_fee || 0)
+            : (walletData?.paymentFeeRule?.facebook_application_fee || 0),
+        commissionPercent: isCard
+            ? (walletData?.paymentFeeRule?.facebook_credit_commission || 0)
+            : (walletData?.paymentFeeRule?.facebook_commission || 0),
     };
 
     const mutation = useMutation({
@@ -123,6 +129,7 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                 hasFullAdminAccess: false,
                 adAccounts: [{ accountName: "", timeZone: "", amount: "" }],
                 remarks: "",
+
             });
             setErrors({});
         }
@@ -244,6 +251,7 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                 amount: parseFloat(acc.amount),
             })),
             remarks: formData.remarks,
+            isCard: isCard,
         };
 
         mutation.mutate(payload);
