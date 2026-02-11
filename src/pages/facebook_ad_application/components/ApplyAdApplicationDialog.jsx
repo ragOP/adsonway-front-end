@@ -276,196 +276,200 @@ const ApplyAdApplicationDialog = ({ open, onOpenChange, onSuccess }) => {
                 <div className="p-8 space-y-8">
 
                     <form onSubmit={onSubmit} className="space-y-8">
-                        {/* License Section */}
-                        <div className="space-y-3">
-                            <Label className="font-semibold text-sm">License Number *</Label>
-                            <div className="space-y-3">
-                                <Select
-                                    value={formData.licenseType}
-                                    onValueChange={(val) => {
-                                        setFormData(prev => ({ ...prev, licenseType: val, licenseNumber: "" }));
-                                    }}
-                                >
-                                    <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
-                                        <SelectValue placeholder="Select License Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="New License">New License</SelectItem>
-                                        <SelectItem value="Existing License">Existing License</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                        {!isCard && (
+                            <>
+                                {/* License Section */}
+                                <div className="space-y-3">
+                                    <Label className="font-semibold text-sm">License Number *</Label>
+                                    <div className="space-y-3">
+                                        <Select
+                                            value={formData.licenseType}
+                                            onValueChange={(val) => {
+                                                setFormData(prev => ({ ...prev, licenseType: val, licenseNumber: "" }));
+                                            }}
+                                        >
+                                            <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
+                                                <SelectValue placeholder="Select License Type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="New License">New License</SelectItem>
+                                                <SelectItem value="Existing License">Existing License</SelectItem>
+                                            </SelectContent>
+                                        </Select>
 
-                                {formData.licenseType === "New License" ? (
-                                    <Input
-                                        placeholder="Enter new license number"
-                                        value={formData.licenseNumber}
-                                        onChange={(e) => {
-                                            setFormData(prev => ({ ...prev, licenseNumber: e.target.value }));
-                                            if (errors.licenseNumber) setErrors(prev => ({ ...prev, licenseNumber: null }));
-                                        }}
-                                        className={`bg-white dark:bg-zinc-900 h-11 ${errors.licenseNumber ? "border-red-500" : ""}`}
-                                    />
-                                ) : (
+                                        {formData.licenseType === "New License" ? (
+                                            <Input
+                                                placeholder="Enter new license number"
+                                                value={formData.licenseNumber}
+                                                onChange={(e) => {
+                                                    setFormData(prev => ({ ...prev, licenseNumber: e.target.value }));
+                                                    if (errors.licenseNumber) setErrors(prev => ({ ...prev, licenseNumber: null }));
+                                                }}
+                                                className={`bg-white dark:bg-zinc-900 h-11 ${errors.licenseNumber ? "border-red-500" : ""}`}
+                                            />
+                                        ) : (
+                                            <Select
+                                                value={formData.licenseNumber}
+                                                onValueChange={(val) => {
+                                                    setFormData(prev => ({ ...prev, licenseNumber: val }));
+                                                    if (errors.licenseNumber) setErrors(prev => ({ ...prev, licenseNumber: null }));
+                                                }}
+                                                disabled={isLoadingAccounts}
+                                            >
+                                                <SelectTrigger className={`bg-white dark:bg-zinc-900 h-11 w-full ${errors.licenseNumber ? "border-red-500" : ""}`}>
+                                                    <SelectValue placeholder={isLoadingAccounts ? "Loading accounts..." : "Select existing license"} />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {activeAccounts?.accounts?.length > 0 ? (
+                                                        activeAccounts.accounts.map((account) => (
+                                                            <SelectItem key={account._id} value={account.license_number}>
+                                                                {account.license_number}
+                                                            </SelectItem>
+                                                        ))
+                                                    ) : (
+                                                        <SelectItem value="no_accounts" disabled>No active accounts found</SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+
+                                        {errors.licenseNumber && <p className="text-xs text-red-500">{errors.licenseNumber}</p>}
+                                    </div>
+                                </div>
+
+                                {/* Pages Section */}
+                                <div className="space-y-3">
+                                    <Label className="font-semibold text-sm">Number of Pages * (Maximum 5)</Label>
                                     <Select
-                                        value={formData.licenseNumber}
-                                        onValueChange={(val) => {
-                                            setFormData(prev => ({ ...prev, licenseNumber: val }));
-                                            if (errors.licenseNumber) setErrors(prev => ({ ...prev, licenseNumber: null }));
-                                        }}
-                                        disabled={isLoadingAccounts}
+                                        value={formData.numberOfPages}
+                                        onValueChange={(val) => handleCountChange("pageUrls", "numberOfPages", val)}
                                     >
-                                        <SelectTrigger className={`bg-white dark:bg-zinc-900 h-11 w-full ${errors.licenseNumber ? "border-red-500" : ""}`}>
-                                            <SelectValue placeholder={isLoadingAccounts ? "Loading accounts..." : "Select existing license"} />
+                                        <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
+                                            <SelectValue placeholder="Select number of pages" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {activeAccounts?.accounts?.length > 0 ? (
-                                                activeAccounts.accounts.map((account) => (
-                                                    <SelectItem key={account._id} value={account.license_number}>
-                                                        {account.license_number}
-                                                    </SelectItem>
-                                                ))
-                                            ) : (
-                                                <SelectItem value="no_accounts" disabled>No active accounts found</SelectItem>
-                                            )}
+                                            {[0, 1, 2, 3, 4, 5].map(num => (
+                                                <SelectItem key={num} value={num.toString()}>{num === 0 ? "Select number of pages" : num}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
-                                )}
 
-                                {errors.licenseNumber && <p className="text-xs text-red-500">{errors.licenseNumber}</p>}
-                            </div>
-                        </div>
-
-                        {/* Pages Section */}
-                        <div className="space-y-3">
-                            <Label className="font-semibold text-sm">Number of Pages * (Maximum 5)</Label>
-                            <Select
-                                value={formData.numberOfPages}
-                                onValueChange={(val) => handleCountChange("pageUrls", "numberOfPages", val)}
-                            >
-                                <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
-                                    <SelectValue placeholder="Select number of pages" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {[0, 1, 2, 3, 4, 5].map(num => (
-                                        <SelectItem key={num} value={num.toString()}>{num === 0 ? "Select number of pages" : num}</SelectItem>
+                                    {/* Dynamic Page Inputs */}
+                                    {formData.pageUrls.map((url, index) => (
+                                        <div key={index} className="space-y-1 animate-in slide-in-from-top-2">
+                                            <Input
+                                                placeholder={`Page URL #${index + 1}`}
+                                                value={url}
+                                                onChange={(e) => handleArrayInputChange("pageUrls", index, e.target.value)}
+                                                className={`h-11 ${errors[`pageUrls.${index}`] ? "border-red-500" : ""}`}
+                                            />
+                                            {errors[`pageUrls.${index}`] && (
+                                                <p className="text-xs text-red-500">This field is required</p>
+                                            )}
+                                        </div>
                                     ))}
-                                </SelectContent>
-                            </Select>
+                                </div>
 
-                            {/* Dynamic Page Inputs */}
-                            {formData.pageUrls.map((url, index) => (
-                                <div key={index} className="space-y-1 animate-in slide-in-from-top-2">
-                                    <Input
-                                        placeholder={`Page URL #${index + 1}`}
-                                        value={url}
-                                        onChange={(e) => handleArrayInputChange("pageUrls", index, e.target.value)}
-                                        className={`h-11 ${errors[`pageUrls.${index}`] ? "border-red-500" : ""}`}
+                                {/* Profile Link (Read Only) */}
+                                <div className="space-y-3">
+                                    <Label className="font-semibold text-sm">Profile Link (Copy this link) *</Label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 bg-zinc-50 dark:bg-zinc-900/50 border border-green-200 dark:border-green-900 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 truncate flex items-center">
+                                            {settingsData?.facebook_profile_link || "Not set by admin"}
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="shrink-0 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/20"
+                                            onClick={() => copyToClipboard(settingsData?.facebook_profile_link, "Profile Link")}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {/* Business Manager ID (Read Only) */}
+                                <div className="space-y-3">
+                                    <Label className="font-semibold text-sm">Business Manager ID (Copy this ID) *</Label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 bg-zinc-50 dark:bg-zinc-900/50 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 truncate flex items-center">
+                                            {settingsData?.bussiness_manager_id || "Not set by admin"}
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="shrink-0 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-900 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                                            onClick={() => copyToClipboard(settingsData?.bussiness_manager_id, "Business Manager ID")}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {/* Admin Confirmation Checkbox */}
+                                <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800/50 rounded-lg p-4 flex items-start gap-3">
+                                    <Checkbox
+                                        id="adminAccess"
+                                        checked={formData.hasFullAdminAccess}
+                                        onCheckedChange={(checked) => {
+                                            setFormData(prev => ({ ...prev, hasFullAdminAccess: checked }));
+                                            if (errors.hasFullAdminAccess) setErrors(prev => ({ ...prev, hasFullAdminAccess: null }));
+                                        }}
+                                        className="mt-1 border-yellow-400 data-[state=checked]:bg-yellow-400 data-[state=checked]:text-white"
                                     />
-                                    {errors[`pageUrls.${index}`] && (
-                                        <p className="text-xs text-red-500">This field is required</p>
-                                    )}
+                                    <Label htmlFor="adminAccess" className="text-sm font-medium leading-tight cursor-pointer">
+                                        I've shared the Full Admin Access of the Pages to the Profile Link mentioned above. *
+                                    </Label>
                                 </div>
-                            ))}
-                        </div>
+                                {errors.hasFullAdminAccess && <p className="text-xs text-red-500">{errors.hasFullAdminAccess}</p>}
 
-                        {/* Profile Link (Read Only) */}
-                        <div className="space-y-3">
-                            <Label className="font-semibold text-sm">Profile Link (Copy this link) *</Label>
-                            <div className="flex gap-2">
-                                <div className="flex-1 bg-zinc-50 dark:bg-zinc-900/50 border border-green-200 dark:border-green-900 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 truncate flex items-center">
-                                    {settingsData?.facebook_profile_link || "Not set by admin"}
-                                </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="shrink-0 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-900 dark:text-green-400 dark:hover:bg-green-900/20"
-                                    onClick={() => copyToClipboard(settingsData?.facebook_profile_link, "Profile Link")}
-                                >
-                                    <Copy className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
+                                {/* Domains Section */}
+                                <div className="space-y-3">
+                                    <Label className="font-semibold text-sm">Number of Domains *</Label>
+                                    <Select
+                                        value={formData.numberOfDomains}
+                                        onValueChange={(val) => {
+                                            if (val === "unlimited") {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    numberOfDomains: "unlimited",
+                                                    domainUrls: []
+                                                }));
+                                            } else {
+                                                handleCountChange("domainUrls", "numberOfDomains", val);
+                                            }
+                                        }}
+                                    >
+                                        <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
+                                            <SelectValue placeholder="Select number of domains" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {[0, 1, 2, 3, 4, 5].map(num => (
+                                                <SelectItem key={num} value={num.toString()}>{num === 0 ? "Select number of domains" : num}</SelectItem>
+                                            ))}
+                                            <SelectItem value="unlimited">Unlimited</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                        {/* Business Manager ID (Read Only) */}
-                        <div className="space-y-3">
-                            <Label className="font-semibold text-sm">Business Manager ID (Copy this ID) *</Label>
-                            <div className="flex gap-2">
-                                <div className="flex-1 bg-zinc-50 dark:bg-zinc-900/50 border border-blue-200 dark:border-blue-900 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 truncate flex items-center">
-                                    {settingsData?.bussiness_manager_id || "Not set by admin"}
-                                </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="shrink-0 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-900 dark:text-blue-400 dark:hover:bg-blue-900/20"
-                                    onClick={() => copyToClipboard(settingsData?.bussiness_manager_id, "Business Manager ID")}
-                                >
-                                    <Copy className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-
-                        {/* Admin Confirmation Checkbox */}
-                        <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800/50 rounded-lg p-4 flex items-start gap-3">
-                            <Checkbox
-                                id="adminAccess"
-                                checked={formData.hasFullAdminAccess}
-                                onCheckedChange={(checked) => {
-                                    setFormData(prev => ({ ...prev, hasFullAdminAccess: checked }));
-                                    if (errors.hasFullAdminAccess) setErrors(prev => ({ ...prev, hasFullAdminAccess: null }));
-                                }}
-                                className="mt-1 border-yellow-400 data-[state=checked]:bg-yellow-400 data-[state=checked]:text-white"
-                            />
-                            <Label htmlFor="adminAccess" className="text-sm font-medium leading-tight cursor-pointer">
-                                I've shared the Full Admin Access of the Pages to the Profile Link mentioned above. *
-                            </Label>
-                        </div>
-                        {errors.hasFullAdminAccess && <p className="text-xs text-red-500">{errors.hasFullAdminAccess}</p>}
-
-                        {/* Domains Section */}
-                        <div className="space-y-3">
-                            <Label className="font-semibold text-sm">Number of Domains *</Label>
-                            <Select
-                                value={formData.numberOfDomains}
-                                onValueChange={(val) => {
-                                    if (val === "unlimited") {
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            numberOfDomains: "unlimited",
-                                            domainUrls: []
-                                        }));
-                                    } else {
-                                        handleCountChange("domainUrls", "numberOfDomains", val);
-                                    }
-                                }}
-                            >
-                                <SelectTrigger className="bg-white dark:bg-zinc-900 h-11 w-full">
-                                    <SelectValue placeholder="Select number of domains" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {[0, 1, 2, 3, 4, 5].map(num => (
-                                        <SelectItem key={num} value={num.toString()}>{num === 0 ? "Select number of domains" : num}</SelectItem>
+                                    {/* Dynamic Domain Inputs */}
+                                    {formData.numberOfDomains !== "unlimited" && formData.domainUrls.map((url, index) => (
+                                        <div key={index} className="space-y-1 animate-in slide-in-from-top-2">
+                                            <Input
+                                                placeholder={`Domain URL #${index + 1}`}
+                                                value={url}
+                                                onChange={(e) => handleArrayInputChange("domainUrls", index, e.target.value)}
+                                                className={`h-11 ${errors[`domainUrls.${index}`] ? "border-red-500" : ""}`}
+                                            />
+                                            {errors[`domainUrls.${index}`] && (
+                                                <p className="text-xs text-red-500">This field is required</p>
+                                            )}
+                                        </div>
                                     ))}
-                                    <SelectItem value="unlimited">Unlimited</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            {/* Dynamic Domain Inputs */}
-                            {formData.numberOfDomains !== "unlimited" && formData.domainUrls.map((url, index) => (
-                                <div key={index} className="space-y-1 animate-in slide-in-from-top-2">
-                                    <Input
-                                        placeholder={`Domain URL #${index + 1}`}
-                                        value={url}
-                                        onChange={(e) => handleArrayInputChange("domainUrls", index, e.target.value)}
-                                        className={`h-11 ${errors[`domainUrls.${index}`] ? "border-red-500" : ""}`}
-                                    />
-                                    {errors[`domainUrls.${index}`] && (
-                                        <p className="text-xs text-red-500">This field is required</p>
-                                    )}
                                 </div>
-                            ))}
-                        </div>
+                            </>
+                        )}
 
                         {/* Ad Accounts Section */}
                         <div className="space-y-4">

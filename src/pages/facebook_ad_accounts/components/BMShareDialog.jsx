@@ -191,13 +191,13 @@ const BMShareDialog = ({ open, onOpenChange, initialAccount }) => {
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="text-xs font-semibold text-zinc-500 uppercase">Business Manager ID *</Label>
+                                                    <Label className="text-xs font-semibold text-zinc-500 uppercase">Business Manager ID / Gmail Id *</Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             value={req.shared_id}
                                                             onChange={(e) => handleRequestChange(index, "shared_id", e.target.value)}
-                                                            placeholder="Enter BM ID"
-                                                            className="bg-zinc-900 border-zinc-800 h-11 text-zinc-100 placeholder:text-zinc-700"
+                                                            placeholder="Enter Business Manager ID / Gmail Id"
+                                                            className="bg-zinc-900 border-zinc-800 h-9 text-zinc-100 placeholder:text-zinc-700"
                                                         />
                                                         {index === requests.length - 1 && (
                                                             <Button
