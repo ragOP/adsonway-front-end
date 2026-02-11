@@ -2,7 +2,7 @@ import { useState } from "react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
-import { Search, Bell, Flag, Wallet } from "lucide-react"
+import { Search, Bell, Flag, Wallet, CreditCard, Landmark } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useQuery } from "@tanstack/react-query"
 import { getItem } from "@/utils/local_storage"
@@ -70,15 +70,24 @@ export function Navbar() {
                 </button> */}
 
                 {userRole === "user" && (
-                    <div className="flex items-center gap-2">
-                        <Label htmlFor="card-mode" className="text-sm font-medium text-muted-foreground">
-                            {isCard ? "Credit Line Mode" : "Card Line Mode"}
-                        </Label>
+                    <div className={`flex items-center gap-3 p-1.5 pl-4 pr-1.5 rounded-full border backdrop-blur-md transition-all duration-500 ${isCard
+                            ? "bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_-3px_rgba(16,185,129,0.15)] hover:border-emerald-500/30 hover:bg-emerald-500/15"
+                            : "bg-blue-500/10 border-blue-500/20 shadow-[0_0_15px_-3px_rgba(59,130,246,0.15)] hover:border-blue-500/30 hover:bg-blue-500/15"
+                        }`}>
+                        <div className={`flex items-center gap-2 text-xs font-bold tracking-wide uppercase transition-colors duration-300 ${isCard ? "text-emerald-400" : "text-blue-400"
+                            }`}>
+                            {isCard ? <Landmark className="w-4 h-4" strokeWidth={2.5} /> : <CreditCard className="w-4 h-4" strokeWidth={2.5} />}
+                            <span className="hidden sm:inline-block pt-0.5">
+                                {isCard ? "Credit Line" : "Card Line"}
+                            </span>
+                        </div>
                         <Switch
-                            id="card-mode"
                             checked={isCard}
                             onCheckedChange={setIsCard}
-                            className="data-[state=checked]:bg-blue-600"
+                            className={`h-6 w-10 border-2 border-transparent transition-all duration-500 ${isCard
+                                    ? "data-[state=checked]:bg-emerald-500 data-[state=checked]:shadow-[0_0_10px_rgba(16,185,129,0.4)]"
+                                    : "data-[state=unchecked]:bg-blue-500 data-[state=unchecked]:shadow-[0_0_10px_rgba(59,130,246,0.4)]"
+                                }`}
                         />
                     </div>
                 )}
